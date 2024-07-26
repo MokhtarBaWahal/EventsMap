@@ -17,8 +17,8 @@ def save_events(events_data):
 
 
 @app.route('/')
-def hello():
-    return "Hello, World!"
+def index():
+    return render_template('index.html')
 
 
 @app.route('/events/<int:year>')
