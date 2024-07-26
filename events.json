@@ -1,0 +1,21 @@
+{
+  "2024": [
+    {
+      "coordinates": [28.9784, 41.0082],
+      "title": "Istanbul Event",
+      "description": "An event in Istanbul 2024.",
+      "image": "https://s3.amazonaws.com/atg-prod-oaas-files/hum54-15/original/c6ebc773f5b21bd8df84c30ab0d59d1b.jpg"
+    }
+
+  ],
+  "1453": [
+    {
+      "coordinates": [28.9784, 41.0082],
+      "title": "Conquest of Constantinople",
+      "description": "By Mehmet II in 1453.",
+      "image": "https://s3.amazonaws.com/atg-prod-oaas-files/hum54-15/original/c6ebc773f5b21bd8df84c30ab0d59d1b.jpg"
+    }
+
+  ]
+
+}
