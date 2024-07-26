@@ -1,3 +1,5 @@
+mapboxgl.accessToken = 'pk.eyJ1IjoibW9raHRhcnNhbGVtcyIsImEiOiJjbHoybmhwYWwzMGZuMmlxc2tpaDhlNmkzIn0.3B1q00jaaxe2IsYm0icQlw';
+
 
 const map = new mapboxgl.Map({
   container: 'map',
@@ -95,4 +97,4 @@ function addEvent(event) {
 }
 
 // Initial load
-updateMap();
+updateMap();updateMap();
