@@ -1,5 +1,3 @@
-mapboxgl.accessToken = 'pk.eyJ1IjoibW9raHRhcnNhbGVtcyIsImEiOiJjbHoybmhwYWwzMGZuMmlxc2tpaDhlNmkzIn0.3B1q00jaaxe2IsYm0icQlw';
-
 
 const map = new mapboxgl.Map({
   container: 'map',
@@ -11,12 +9,31 @@ const map = new mapboxgl.Map({
 const yearInput = document.getElementById('year');
 yearInput.addEventListener('change', updateMap);
 
-const eventForm = document.getElementById('new-event-form');
-eventForm.addEventListener('submit', addEvent);
+const showFormBtn = document.getElementById('show-form-btn');
+const eventForm = document.getElementById('event-form');
+let addingEvent = false;
+
+showFormBtn.addEventListener('click', () => {
+  eventForm.style.display = eventForm.style.display === 'none' ? 'block' : 'none';
+  addingEvent = !addingEvent;
+  if (addingEvent) {
+    map.getCanvas().classList.add('add-event-cursor');
+  } else {
+    map.getCanvas().classList.remove('add-event-cursor');
+  }
+});
+
+const form = document.getElementById('new-event-form');
+form.addEventListener('submit', addEvent);
 
 map.on('click', function(e) {
-  const coordinates = e.lngLat;
-  document.getElementById('event-coordinates').value = `${coordinates.lng},${coordinates.lat}`;
+  if (addingEvent) {
+    const coordinates = e.lngLat;
+    document.getElementById('event-coordinates').value = `${coordinates.lng},${coordinates.lat}`;
+    map.getCanvas().classList.remove('add-event-cursor');
+    addingEvent = false;
+    eventForm.style.display = 'block';
+  }
 });
 
 function updateMap() {
@@ -71,7 +88,8 @@ function addEvent(event) {
   .then(data => {
     if (data.status === 'success') {
       updateMap();
-      eventForm.reset();
+      form.reset();
+      eventForm.style.display = 'none';  // Hide the form after submission
     }
   });
 }
