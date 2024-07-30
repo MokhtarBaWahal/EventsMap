@@ -1,15 +1,26 @@
 mapboxgl.accessToken = 'pk.eyJ1IjoibW9raHRhcnNhbGVtcyIsImEiOiJjbHoybmhwYWwzMGZuMmlxc2tpaDhlNmkzIn0.3B1q00jaaxe2IsYm0icQlw';
 
-
 const map = new mapboxgl.Map({
   container: 'map',
-  style: 'mapbox://styles/mapbox/streets-v11',
+  style: 'mapbox://styles/mapbox/light-v11',
   center: [0, 0],
   zoom: 2
 });
 
-const yearInput = document.getElementById('year');
-yearInput.addEventListener('change', updateMap);
+
+map.on('load', () => {
+  // Change the water color
+  map.setPaintProperty('water', 'fill-color', '#41b6c4'); // Customize this color to your preference
+
+  // Change the land color
+  map.setPaintProperty('land', 'background-color', '#e6e6e6'); // Customize this color to your preference
+});
+
+const yearSlider = document.getElementById('year-slider');
+const yearInput = document.getElementById('year-input');
+
+yearSlider.addEventListener('input', updateMap);
+yearInput.addEventListener('input', updateMap);
 
 const showFormBtn = document.getElementById('show-form-btn');
 const eventForm = document.getElementById('event-form');
@@ -33,13 +44,12 @@ map.on('click', function(e) {
     const coordinates = e.lngLat;
     document.getElementById('event-coordinates').value = `${coordinates.lng},${coordinates.lat}`;
     map.getCanvas().classList.remove('add-event-cursor');
-    addingEvent = false;
     eventForm.style.display = 'block';
   }
 });
 
 function updateMap() {
-  const year = yearInput.value;
+  const year = yearSlider.value;
 
   fetch(`/events/${year}`)
     .then(response => response.json())
@@ -94,7 +104,9 @@ function addEvent(event) {
       eventForm.style.display = 'none';  // Hide the form after submission
     }
   });
+
+  addingEvent = false;
 }
 
 // Initial load
-updateMap();updateMap();
+updateMap();
