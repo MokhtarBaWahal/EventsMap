@@ -19,8 +19,16 @@ map.on('load', () => {
 const yearSlider = document.getElementById('year-slider');
 const yearInput = document.getElementById('year-input');
 
-yearSlider.addEventListener('input', updateMap);
-yearInput.addEventListener('input', updateMap);
+// Add event listeners for both slider and input field
+yearSlider.addEventListener('input', () => {
+  yearInput.value = yearSlider.value; // Update input field value when slider changes
+  updateMap();
+});
+
+yearInput.addEventListener('input', () => {
+  yearSlider.value = yearInput.value; // Update slider value when input field changes
+  updateMap();
+});
 
 const showFormBtn = document.getElementById('show-form-btn');
 const eventForm = document.getElementById('event-form');

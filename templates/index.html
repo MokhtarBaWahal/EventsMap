@@ -6,26 +6,115 @@
   <title>Interactive Historical Map</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
   <script src="https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js"></script>
   <link href="https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.css" rel="stylesheet">
+
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9H8qZ3gtD5I2SmXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
 </head>
 <body>
-  <div id="year-selector">
-    <label for="year-slider">Select Year:</label>
-    <input type="range" id="year-slider" min="0" max="2024" value="2024" step="1" oninput="document.getElementById('year-input').value = this.value">
-    <input type="number" id="year-input" min="0" max="2024" value="2024" step="1" oninput="document.getElementById('year-slider').value = this.value">
-  </div>
+
+<header class="d-flex bg-body closed z-3">
+  <h1 class="d-flex m-0 fw-semibold">
+    <a href="/" class="icon-link gap-1 text-body-emphasis text-decoration-none geolink logo-title">
+      <img alt="OpenStreetMap logo" src="static/logo.png" width="30" height="30">
+        GoodGuysMap
+    </a>
+  </h1>
+
+  <nav class="secondary d-flex gap-2 align-items-center">
+    <ul class="nav">
+<!--      <li class="compact-hide nav-item">-->
+<!--        <a class="nav-link text-secondary" href="/traces">GPS Traces</a>-->
+<!--      </li>-->
+<!--      <li class="compact-hide nav-item">-->
+<!--        <a class="nav-link text-secondary" href="/diary">User Diaries</a>-->
+<!--      </li>-->
+<!--      <li class="compact-hide nav-item">-->
+<!--        <a class="nav-link text-secondary" href="/communities">Communities</a>-->
+<!--      </li>-->
+      <li class="compact-hide nav-item">
+        <a class="nav-link text-secondary" id="show-form-btn">Add pin</a>
+      </li>
+      <li class="compact-hide nav-item">
+        <a class="nav-link text-secondary" href="/help">Help</a>
+      </li>
+      <li class="compact-hide nav-item">
+        <a class="nav-link text-secondary" href="/about">
+            About
+        </a>
+      </li>
+<!--      <li id="compact-secondary-nav" class="dropdown nav-item">-->
+<!--        <button class="dropdown-toggle nav-link btn btn-outline-secondary border-0 bg-body text-secondary" type="button" data-bs-toggle="dropdown">More</button>-->
+<!--        <ul class="dropdown-menu">-->
+<!--          <li><a class="dropdown-item" href="/traces">GPS Traces</a></li>-->
+<!--          <li><a class="dropdown-item" href="/diary">User Diaries</a></li>-->
+<!--          <li><a class="dropdown-item" href="/communities">Communities</a></li>-->
+<!--          <li><a class="dropdown-item" href="/copyright">Copyright</a></li>-->
+<!--          <li><a class="dropdown-item" href="/help">Help</a></li>-->
+<!--          <li><a class="dropdown-item" href="/about">About</a></li>-->
+<!--        </ul>-->
+<!--      </li>-->
+    </ul>
+    <div class="d-inline-flex btn-group login-menu" role="">
+      <a class="geolink btn btn-outline-secondary" href="https://www.openstreetmap.org/login?referer=%2Fhistory#map=3/4.12/68.91">Log In</a>
+      <a class="btn btn-outline-secondary" href="/user/new">Sign Up</a>
+    </div>
+  </nav>
+</header>
+
+
+<div>
+    <div id="year-selector">
+
+        <div class="slider-container">
+            <!-- Year markers -->
+            <div class="year-markers">
+                <span>1900</span>
+                <span>1910</span>
+                <span>1920</span>
+                <span>1930</span>
+                <span>1940</span>
+                <span>1950</span>
+                <span>1960</span>
+                <span>1970</span>
+                <span>1980</span>
+                <span>1990</span>
+                <span>2000</span>
+            </div>
+        </div>
+
+        <div id="century-selector">
+        <select id="century-dropdown" onchange="updateCenturySelection()">
+            <option value="20">20th Century</option>
+            <option value="21" selected>21st Century</option>
+            <option value="22">22nd Century</option>
+            <option value="23">23rd Century</option>
+            <!-- Add more centuries as needed -->
+        </select>
+    </div>
+        <input type="range" id="year-slider" min="1900" max="2000" value="2000" step="1" oninput="updateInputs()">
+        <input type="number" id="year-input" min="1900" max="2000" value="2000" step="1" oninput="updateInputs()">
+
+
+
+    </div>
+
+</div>
 
   <div id="map"></div>
 
-  <div id="add-event-icon">
-    <button id="show-form-btn"><i class="fas fa-plus"></i></button>
-  </div>
+
+
+
 
   <div id="event-form" style="display: none;">
     <h3>Add New Event</h3>
     <form id="new-event-form">
-      <label for="event-year">Year:</label>
       <input type="number" id="event-year" required><br>
       <label for="event-title">Title:</label>
       <input type="text" id="event-title" required><br>
@@ -39,6 +128,45 @@
     </form>
     <p>Click on the map to set the event coordinates.</p>
   </div>
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header login-form">
+                <span slot="icon" class="s-login-modal-header-icon">
+                    <img src="https://img.icons8.com/?size=100&id=15263&format=png&color=000000" width="100" height="100">
+                </span>
+                <h5 class="modal-title" id="loginModalTitle">Log In</h5>
+            </div>
+            <div class="modal-body" width="10">
+                <form>
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">Email</label>
+                        <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter your email">
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInputPassword1">Password</label>
+                        <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Enter your password">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer login-form">
+                <button type="button" class="btn btn-outline-secondary form-control">Log In</button>
+                <div class="form-row mt-3">
+                    <div class="col text-left">
+                        <a href="#" class="btn btn-link">New User?</a>
+                    </div>
+                    <div class="col text-right">
+                        <a href="#" class="btn btn-link">Forgot Password?</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
   <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
