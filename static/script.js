@@ -7,7 +7,6 @@ const map = new mapboxgl.Map({
   zoom: 2
 });
 
-
 map.on('load', () => {
   // Change the water color
   map.setPaintProperty('water', 'fill-color', '#41b6c4'); // Customize this color to your preference
@@ -18,6 +17,11 @@ map.on('load', () => {
 
 const yearSlider = document.getElementById('year-slider');
 const yearInput = document.getElementById('year-input');
+const centuryDropdown = document.getElementById('century-dropdown');
+const yearMarkersContainer = document.querySelector('.year-markers');
+const customCenturyInput = document.getElementById('custom-century-input');
+const centurySuffix = document.getElementById('century-suffix');
+
 
 // Add event listeners for both slider and input field
 yearSlider.addEventListener('input', () => {
@@ -30,31 +34,105 @@ yearInput.addEventListener('input', () => {
   updateMap();
 });
 
-const showFormBtn = document.getElementById('show-form-btn');
-const eventForm = document.getElementById('event-form');
-let addingEvent = false;
+window.addEventListener('resize', () => {
+    updateYearMarkers(parseInt(yearSlider.min), parseInt(yearSlider.max));
+});
 
-showFormBtn.addEventListener('click', () => {
-  eventForm.style.display = eventForm.style.display === 'none' ? 'block' : 'none';
-  addingEvent = !addingEvent;
-  if (addingEvent) {
-    map.getCanvas().classList.add('add-event-cursor');
+// Event listener for century dropdown
+centuryDropdown.addEventListener('change', updateCenturySelection);
+
+function updateCenturySelection() {
+  if (centuryDropdown.value === 'custom') {
+    customCenturyInput.style.display = 'inline';
+    centurySuffix.style.display = 'inline';
   } else {
-    map.getCanvas().classList.remove('add-event-cursor');
+    const selectedCentury = parseInt(centuryDropdown.value);
+
+    // Calculate the starting and ending years of the selected century
+    const startYear = (selectedCentury - 1) * 100;
+    const endYear = selectedCentury * 100;
+
+    // Update the slider and input min/max values
+    yearSlider.min = startYear;
+    yearSlider.max = endYear;
+    yearSlider.value = endYear; // Set to the last year of the selected century
+    yearInput.min = startYear;
+    yearInput.max = endYear;
+    yearInput.value = endYear;
+
+    // Update the year markers
+    updateYearMarkers(startYear, endYear);
+
+    // Hide the custom input and suffix
+    customCenturyInput.style.display = 'none';
+    centurySuffix.style.display = 'none';
+
+    // Update the map to reflect the new year range
+    updateMap();
+  }
+}
+
+customCenturyInput.addEventListener('input', () => {
+  const customCenturyValue = parseInt(customCenturyInput.value);
+
+  if (!isNaN(customCenturyValue)) {
+    const startYear = (customCenturyValue - 1) * 100;
+    const endYear = customCenturyValue * 100;
+
+    // Update the slider and input min/max values
+    yearSlider.min = startYear;
+    yearSlider.max = endYear;
+    yearSlider.value = endYear; // Set to the last year of the custom century
+    yearInput.min = startYear;
+    yearInput.max = endYear;
+    yearInput.value = endYear;
+
+    // Update the year markers
+    updateYearMarkers(startYear, endYear);
+
+    // Update the suffix text
+    centurySuffix.textContent = getOrdinalSuffix(customCenturyValue) + ' Century';
+
+    // Update the map to reflect the new year range
+    updateMap();
   }
 });
 
-const form = document.getElementById('new-event-form');
-form.addEventListener('submit', addEvent);
-
-map.on('click', function(e) {
-  if (addingEvent) {
-    const coordinates = e.lngLat;
-    document.getElementById('event-coordinates').value = `${coordinates.lng},${coordinates.lat}`;
-    map.getCanvas().classList.remove('add-event-cursor');
-    eventForm.style.display = 'block';
+function getOrdinalSuffix(number) {
+  const j = number % 10,
+        k = number % 100;
+  if (j == 1 && k != 11) {
+    return number + "st";
   }
-});
+  if (j == 2 && k != 12) {
+    return number + "nd";
+  }
+  if (j == 3 && k != 13) {
+    return number + "rd";
+  }
+  return number + "th";
+}
+
+function updateYearMarkers(startYear, endYear) {
+  // Clear existing markers
+  yearMarkersContainer.innerHTML = '';
+
+  // Calculate the interval for the markers (e.g., every 10 years)
+  const interval = 25;
+  const sliderWidth = yearSlider.offsetWidth;
+
+    for (let year = startYear; year <= endYear; year += interval) {
+        const marker = document.createElement('span');
+        marker.textContent = year;
+
+        // Calculate the position of the marker
+        const positionPercent = ((year - startYear) / (endYear - startYear)) * 100;
+        marker.style.position = 'absolute';
+        marker.style.left = `calc(${positionPercent}%)`; // Adjust -15px based on marker width
+
+        yearMarkersContainer.appendChild(marker);
+    }
+}
 
 function updateMap() {
   const year = yearSlider.value;
@@ -115,6 +193,8 @@ function addEvent(event) {
 
   addingEvent = false;
 }
+
+
 
 // Initial load
 updateMap();
