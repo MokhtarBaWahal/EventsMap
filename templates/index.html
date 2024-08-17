@@ -32,15 +32,7 @@
 
   <nav class="secondary d-flex gap-2 align-items-center">
     <ul class="nav">
-<!--      <li class="compact-hide nav-item">-->
-<!--        <a class="nav-link text-secondary" href="/traces">GPS Traces</a>-->
-<!--      </li>-->
-<!--      <li class="compact-hide nav-item">-->
-<!--        <a class="nav-link text-secondary" href="/diary">User Diaries</a>-->
-<!--      </li>-->
-<!--      <li class="compact-hide nav-item">-->
-<!--        <a class="nav-link text-secondary" href="/communities">Communities</a>-->
-<!--      </li>-->
+
       <li class="compact-hide nav-item">
         <a class="nav-link text-secondary" id="show-form-btn">Add pin</a>
       </li>
@@ -52,17 +44,7 @@
             About
         </a>
       </li>
-<!--      <li id="compact-secondary-nav" class="dropdown nav-item">-->
-<!--        <button class="dropdown-toggle nav-link btn btn-outline-secondary border-0 bg-body text-secondary" type="button" data-bs-toggle="dropdown">More</button>-->
-<!--        <ul class="dropdown-menu">-->
-<!--          <li><a class="dropdown-item" href="/traces">GPS Traces</a></li>-->
-<!--          <li><a class="dropdown-item" href="/diary">User Diaries</a></li>-->
-<!--          <li><a class="dropdown-item" href="/communities">Communities</a></li>-->
-<!--          <li><a class="dropdown-item" href="/copyright">Copyright</a></li>-->
-<!--          <li><a class="dropdown-item" href="/help">Help</a></li>-->
-<!--          <li><a class="dropdown-item" href="/about">About</a></li>-->
-<!--        </ul>-->
-<!--      </li>-->
+
     </ul>
     <div class="d-inline-flex btn-group login-menu" role="">
       <a class="geolink btn btn-outline-secondary" href="/login">Log In</a>
@@ -116,6 +98,11 @@
     <div class="slider-container">
             <input type="text" id="slider" class="slider" />
     </div>
+
+
+        <div class="slider-container">
+            <input type="text" id="slider_century" class="slider" />
+        </div>
 
 </div>
 
@@ -177,51 +164,9 @@
     </div>
 </div>
 
-  <script src="{{ url_for('static', filename='script.js') }}"></script>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
 <script src="{{ url_for('static', filename='range-slider-master/js/rSlider.min.js') }}"></script>
- <script>
-        (function () {
-            'use strict';
 
-            var init = function () {
 
-                var slider2 = new rSlider({
-                    target: '#slider2',
-                    values: [0, 1, 2, 3, 4, 5, 6, '7', 8],
-                    range: false,
-                    set: [5],
-                    tooltip: false,
-                    onChange: function (vals) {
-                        console.log(vals);
-                    }
-                });
-
-                var slider3 = new rSlider({
-                    target: '#slider3',
-                    values: {min: 0, max: 100},
-                    step: 10,
-                    range: true,
-                    set: [10, 40],
-                    scale: true,
-                    labels: false,
-                    onChange: function (vals) {
-                        console.log(vals);
-                    }
-                });
-
-                var slider = new rSlider({
-                    target: '#slider',
-                    values: {min: 1900, max: 2000},
-                    step: 1,
-                    range: true,
-                    set: [2010, 2013],
-                    onChange: function (vals) {
-                        console.log(vals);
-                    }
-                });
-            };
-            window.onload = init;
-        })();
-    </script>
 </body>
 </html>
