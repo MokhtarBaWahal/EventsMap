@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+
+{% block title %}Home - Interactive Historical Map{% endblock %}
+
+{% block content %}
+
+<div class="container" style="display: none;">
+
+    <div class="slider-container">
+            <input type="text" id="slider" class="slider" />
+    </div>
+
+    <div class="slider-container">
+        <input type="text" id="slider_century" class="slider" />
+    </div>
+
+</div>
+{% block scripts %}
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+{% endblock %}
+
+{% endblock %}

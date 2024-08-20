@@ -1,129 +1,39 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Interactive Historical Map</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-
-  <script src="https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js"></script>
-  <link href="https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.css" rel="stylesheet">
-
-    <link rel="stylesheet" href="{{ url_for('static', filename='range-slider-master/css/rSlider.min.css') }}">
+{% extends "base.html" %}
 
 
+{% block title %}Home - Interactive Historical Map{% endblock %}
 
-  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9H8qZ3gtD5I2SmXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-
-</head>
-<body>
-
-<header class="d-flex bg-body closed z-3">
-  <h1 class="d-flex m-0 fw-semibold">
-    <a href="/" class="icon-link gap-1 text-body-emphasis text-decoration-none geolink logo-title">
-      <img alt="OpenStreetMap logo" src="static/logo.png" width="30" height="30">
-        GoodGuysMap
-    </a>
-  </h1>
-
-  <nav class="secondary d-flex gap-2 align-items-center">
-    <ul class="nav">
-
-      <li class="compact-hide nav-item">
-        <a class="nav-link text-secondary" id="show-form-btn">Add pin</a>
-      </li>
-      <li class="compact-hide nav-item">
-        <a class="nav-link text-secondary" href="/help">Help</a>
-      </li>
-      <li class="compact-hide nav-item">
-        <a class="nav-link text-secondary" href="/about">
-            About
-        </a>
-      </li>
-
-    </ul>
-    <div class="d-inline-flex btn-group login-menu" role="">
-      <a class="geolink btn btn-outline-secondary" href="/login">Log In</a>
-      <a class="btn btn-outline-secondary" href="/user/new">Sign Up</a>
-    </div>
-  </nav>
-</header>
-
+{% block content %}
 <div class="container">
-
-
-<!--    <div id="year-selector">-->
-<!--        <div class="slider-container1">-->
-<!--            &lt;!&ndash; Year markers &ndash;&gt;-->
-<!--            <div class="year-markers">-->
-<!--                <span>1900</span>-->
-<!--                <span>1910</span>-->
-<!--                <span>1920</span>-->
-<!--                <span>1930</span>-->
-<!--                <span>1940</span>-->
-<!--                <span>1950</span>-->
-<!--                <span>1960</span>-->
-<!--                <span>1970</span>-->
-<!--                <span>1980</span>-->
-<!--                <span>1990</span>-->
-<!--                <span>2000</span>-->
-<!--            </div>-->
-<!--        </div>-->
-
-<!--       <div id="century-selector" class="d-flex align-items-center">-->
-<!--         <select id="century-dropdown" onchange="updateCenturySelection()">-->
-<!--            <option value="15">15th Century</option>-->
-<!--            <option value="16">16th Century</option>-->
-<!--            <option value="17">17th Century</option>-->
-<!--            <option value="18">18th Century</option>-->
-<!--            <option value="19">19th Century</option>-->
-<!--            <option value="20" selected>20th Century</option>-->
-<!--            <option value="21" >21st Century</option>-->
-<!--            <option value="custom">Custom</option>-->
-<!--         </select>-->
-<!--         <input type="number" id="custom-century-input" style="display: none; margin-left: 10px;" placeholder="..." oninput="updateCustomCentury()" />-->
-<!--         <span id="century-suffix" style="display: none;">st Century</span>-->
-<!--       </div>-->
-
-<!--        <input type="range" id="year-slider" min="1900" max="2000" value="2000" step="1" oninput="updateInputs()" >-->
-
-<!--        <input type="number" id="year-input" min="1900" max="2000" value="2000" step="1" oninput="updateInputs()">-->
-
-<!--    </div>-->
 
     <div class="slider-container">
             <input type="text" id="slider" class="slider" />
     </div>
 
-
-        <div class="slider-container">
-            <input type="text" id="slider_century" class="slider" />
-        </div>
+    <div class="slider-container">
+        <input type="text" id="slider_century" class="slider" />
+    </div>
 
 </div>
 
-  <div id="map"></div>
 
-  <div id="event-form" style="display: none;">
-    <h3>Add New Event</h3>
-    <form id="new-event-form">
-      <input type="number" id="event-year" required><br>
-      <label for="event-title">Title:</label>
-      <input type="text" id="event-title" required><br>
-      <label for="event-description">Description:</label>
-      <textarea id="event-description" required></textarea><br>
-      <label for="event-coordinates">Coordinates:</label>
-      <input type="text" id="event-coordinates" readonly required><br>
-      <label for="event-image">Image URL:</label>
-      <input type="text" id="event-image" required><br>
-      <button type="submit">Add Event</button>
-    </form>
-    <p>Click on the map to set the event coordinates.</p>
-  </div>
+
+<!--  <div id="event-form" style="display: none;">-->
+<!--    <h3>Add New Event</h3>-->
+<!--    <form id="new-event-form">-->
+<!--      <input type="number" id="event-year" required><br>-->
+<!--      <label for="event-title">Title:</label>-->
+<!--      <input type="text" id="event-title" required><br>-->
+<!--      <label for="event-description">Description:</label>-->
+<!--      <textarea id="event-description" required></textarea><br>-->
+<!--      <label for="event-coordinates">Coordinates:</label>-->
+<!--      <input type="text" id="event-coordinates" readonly required><br>-->
+<!--      <label for="event-image">Image URL:</label>-->
+<!--      <input type="text" id="event-image" required><br>-->
+<!--      <button type="submit">Add Event</button>-->
+<!--    </form>-->
+<!--    <p>Click on the map to set the event coordinates.</p>-->
+<!--  </div>-->
 
 
 
@@ -164,9 +74,5 @@
     </div>
 </div>
 
-<script src="{{ url_for('static', filename='script.js') }}"></script>
-<script src="{{ url_for('static', filename='range-slider-master/js/rSlider.min.js') }}"></script>
 
-
-</body>
-</html>
+{% endblock %}

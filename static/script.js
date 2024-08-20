@@ -7,6 +7,7 @@ const map = new mapboxgl.Map({
   zoom: 3
 });
 
+
 var currentTime = new Date()
 
 map.on('load', () => {
@@ -18,28 +19,56 @@ map.on('load', () => {
 });
 
 
-const showFormBtn = document.getElementById('show-form-btn');
-const eventForm = document.getElementById('event-form');
+const coordinates_btn = document.getElementById('set-coordinates-btn');
 let addingEvent = false;
-showFormBtn.addEventListener('click', () => {
-  eventForm.style.display = eventForm.style.display === 'none' ? 'block' : 'none';
-  addingEvent = !addingEvent;
-  if (addingEvent) {
-    map.getCanvas().classList.add('add-event-cursor');
-  } else {
-    map.getCanvas().classList.remove('add-event-cursor');
-  }
-});
-const form = document.getElementById('new-event-form');
-form.addEventListener('submit', addEvent);
+
+// Handle the button click to hide the form
+if (coordinates_btn) {
+    coordinates_btn.addEventListener('click', function() {
+        var form = document.getElementById('event-form-container');
+        if (form) {
+            form.style.display = 'none';  // Hide the form when the button is clicked
+            addingEvent = true; // Set the flag to true to start adding events
+            map.getCanvas().classList.add('add-event-cursor'); // Change cursor to indicate adding mode
+        }
+    });
+}
+
+
+
+const coordinates_location = document.getElementById('set-coordinates-location');
+let addingNewUser = false;
+
+// Handle the button click to hide the form
+if (coordinates_location) {
+    coordinates_location.addEventListener('click', function() {
+        var form = document.getElementById('login-form-container');
+        if (form) {
+            form.style.display = 'none';  // Hide the form when the button is clicked
+            addingNewUser = true; // Set the flag to true to start adding events
+            map.getCanvas().classList.add('add-event-cursor'); // Change cursor to indicate adding mode
+        }
+    });
+}
+// Handle map clicks
 map.on('click', function(e) {
-  if (addingEvent) {
-    const coordinates = e.lngLat;
-    document.getElementById('event-coordinates').value = `${coordinates.lng},${coordinates.lat}`;
-    map.getCanvas().classList.remove('add-event-cursor');
-    eventForm.style.display = 'block';
+  if (addingEvent || addingNewUser) {
+    const coordinates = e.lngLat;  // Get the coordinates from the click event
+    document.getElementById('coordinates').value = `${coordinates.lng}and${coordinates.lat}`; // Set coordinates in the form
+    const eventForm = document.getElementById('event-form-container');
+    const userForm = document.getElementById('login-form-container');
+    if (eventForm) {
+        eventForm.style.display = 'flex';  // Show the form after the click
+    }  else{
+        userForm.style.display = 'flex';
+
+    }
+
+    map.getCanvas().classList.remove('add-event-cursor'); // Reset cursor
+    addingEvent = false;  // Reset the flag
   }
 });
+
 
 (function () {
   'use strict';
@@ -69,20 +98,20 @@ map.on('click', function(e) {
     });
 
     var slider = new rSlider({
-  target: '#slider',
-  values: { min: 2000, max: currentTime.getFullYear() },
-  step: 1,
-  range: true,
-  set: [2000, 2024],
-  onChange: function (vals) {
+      target: '#slider',
+      values: { min: 2000, max: currentTime.getFullYear() },
+      step: 1,
+      range: true,
+      set: [2000, 2024],
+      onChange: function (vals) {
 
-    const [startYear, endYear] = vals.split(',').map(Number);
+        const [startYear, endYear] = vals.split(',').map(Number);
 
-    updateMap(startYear,endYear);
+        updateMap(startYear,endYear);
 
-      }
-    });
-  };
+          }
+        });
+      };
 
   window.onload = init;
 })();
@@ -145,42 +174,3 @@ function updateMap(startYear, endYear) {
     });
 }
 
-function addEvent(event) {
-  event.preventDefault();
-
-  const year = document.getElementById('event-year').value;
-  const title = document.getElementById('event-title').value;
-  const description = document.getElementById('event-description').value;
-  const coordinates = document.getElementById('event-coordinates').value.split(',').map(Number);
-  const image = document.getElementById('event-image').value;
-
-  const newEvent = {
-    year: parseInt(year),
-    title,
-    description,
-    coordinates,
-    image
-  };
-
-  fetch('/add_event', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(newEvent)
-  })
-  .then(response => response.json())
-  .then(data => {
-    if (data.status === 'success') {
-      updateMap();
-      form.reset();
-      eventForm.style.display = 'none';  // Hide the form after submission
-    }
-  });
-
-  addingEvent = false;
-}
-
-// Initial load
-const [startYear, endYear] = slider.getValue().split(',').map(Number);
-updateMap(startYear,endYear);

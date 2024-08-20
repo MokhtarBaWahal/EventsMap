@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Interactive Historical Map{% endblock %}
+
+{% block content %}
+<div id="event-form-container">
+  <div id="event-form">
+    <h3>{% if current_user.is_authenticated %}
+    <p>Add your events!</p>
+{% else %}
+    <p>Please <a href="{{ url_for('login') }}">log in</a>.</p>
+{% endif %}
+    </h3>
+    <form  method="POST" action="/add_event" enctype="multipart/form-data">
+      <input type="text" id="title" name="title" placeholder="Title" required><br>
+
+      <input type="number" id="year" name="year" placeholder="Year" required class="inline-input"><br>
+
+      <textarea id="description" name="description" placeholder="Description" required></textarea><br>
+      <input type="text" id="video-url" name="video-url" placeholder="Wanna add Video URL?"><br>
+
+      <button type="button" id="set-coordinates-btn" class="btn btn-info">Set Coordinates</button><br>
+      <input type="hidden" id="coordinates" name="coordinates" required><br>
+
+      <input type="file" class="form-control-file" id="event-image-btn" name="image" required><br>
+      <button type="submit" class="btn btn-info">Add Event</button><br>
+
+    </form>
+  </div>
+</div>
+
+{% endblock %}

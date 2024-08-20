@@ -1,7 +1,7 @@
 {
     "2024": [
         {
-             "year": 2024,
+            "year": 2024,
             "title": "Istanbul Event",
             "coordinates": [
                 28.9784,
@@ -39,11 +39,31 @@
                 30.022385608489202
             ],
             "image": "https://media.licdn.com/dms/image/D4D35AQFEhyXt9H5E6g/profile-framedphoto-shrink_400_400/0/1643914010607?e=1722884400&v=beta&t=-hzuhB71VDhxEXGUJQ0ex2v6OoSUV7HEId7GF34Xzco"
+        },
+        {
+            "year": 2024,
+            "title": "koko is working",
+            "description": "go",
+            "coordinates": [
+                "43.18459827886579",
+                "23.467073018328506"
+            ],
+            "image": "/static/uploads/Game_On_1.png"
+        },
+        {
+            "year": 2024,
+            "title": "Missing yemen",
+            "description": "I miss my country",
+            "coordinates": [
+                "47.21157540929099",
+                "15.602536332170388"
+            ],
+            "image": "/static/uploads/1_3_2022_7_04_37_AM.png"
         }
     ],
     "2023": [
         {
-             "year": 2023,
+            "year": 2023,
             "title": "Istanbul Event",
             "coordinates": [
                 38.9784,
@@ -78,7 +98,7 @@
             "description": ".",
             "coordinates": [
                 31.22673029467802,
-                50.022385608489202
+                50.0223856084892
             ],
             "image": "https://media.licdn.com/dms/image/D4D35AQFEhyXt9H5E6g/profile-framedphoto-shrink_400_400/0/1643914010607?e=1722884400&v=beta&t=-hzuhB71VDhxEXGUJQ0ex2v6OoSUV7HEId7GF34Xzco"
         }

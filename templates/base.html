@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive Historical Map</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="c696a74d885e39268ef863733eb442233f317097" crossorigin="anonymous">
+
+  <script src="https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js"></script>
+  <link href="https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='range-slider-master/css/rSlider.min.css') }}">
+
+
+
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+</head>
+<body>
+
+<header class="d-flex bg-body closed z-3">
+  <h1 class="d-flex m-0 fw-semibold">
+    <a href="/" class="icon-link gap-1 text-body-emphasis text-decoration-none geolink logo-title">
+      <img alt="GoodGuysMap logo" src="static/logo.png" width="30" height="30">
+        GoodGuysMap
+    </a>
+  </h1>
+
+  <nav class="secondary d-flex gap-2 align-items-center">
+    <ul class="nav">
+
+      <li class="compact-hide nav-item">
+        <a class="nav-link text-secondary" href="{{ url_for('add_event') }}" id="show-form-btn">Add pin</a>
+      </li>
+      <li class="compact-hide nav-item">
+        <a class="nav-link text-secondary" href="/help">Help</a>
+      </li>
+      <li class="compact-hide nav-item">
+        <a class="nav-link text-secondary" href="/about">
+            About
+        </a>
+      </li>
+
+    </ul>
+<div class="d-inline-flex user-menu">
+  {% if current_user.is_authenticated %}
+
+      <div class="dropdown">
+      <button class="btn btn-info dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+       <span class="username align-middle text-truncate">{{ current_user.username }}</span>
+      </button>
+      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+        <a class="dropdown-item" href="/dashboard">My Dashboard</a>
+        <a class="dropdown-item" href="/messages/inbox">My Messages <span class="badge count-number">0</span></a>
+        <a class="dropdown-item" href="/user/{{ current_user.username }}">My Profile</a>
+        <a class="dropdown-item" href="/account/edit">My Settings</a>
+        <a class="dropdown-item" href="/preferences">My Preferences</a>
+        <div class="dropdown-divider"></div>
+        <a class="dropdown-item" href="{{ url_for('logout') }}">Log Out</a>
+      </div>
+    </div>
+  {% else %}
+    <div class="d-inline-flex btn-group login-menu">
+      <a class="geolink btn btn-outline-secondary" href="{{ url_for('login') }}">Log In</a>
+      <a class="btn btn-outline-secondary" href="{{ url_for('register') }}">Sign Up</a>
+    </div>
+  {% endif %}
+</div>
+
+  </nav>
+</header>
+
+
+{% block content %}{% endblock %}
+<div id="map"></div>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+<script src="{{ url_for('static', filename='range-slider-master/js/rSlider.min.js') }}"></script>
+
+
+</body>
+</html>
