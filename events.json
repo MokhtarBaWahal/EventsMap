@@ -113,5 +113,17 @@
             "description": "By Mehmet II in 1453.",
             "image": "https://s3.amazonaws.com/atg-prod-oaas-files/hum54-15/original/c6ebc773f5b21bd8df84c30ab0d59d1b.jpg"
         }
+    ],
+    "2020": [
+        {
+            "year": 2020,
+            "title": "War in Chad",
+            "description": "Chad was facing a turbulent time even before April, when fighting broke out in Sudan\u2019s Darfur region on its eastern border, and things have only got worse since then. President Mahamat D\u00e9by Itno, who took over on an ostensibly interim basis after his father unexpectedly died in 2021, appears set on staying in power. Discontent with his regime is growing, despite efforts led by the Economic Community of the Central African States (ECCAS) to facilitate an agreement among key political parties on how to handle the transition after, in October 2022, a police crackdown killed more than 200 demonstrators. The repression has weakened the political opposition and civil society, prompting several leaders to leave the country. Key Chadian rebel groups remain excluded from the transition, while others are dissatisfied with the government\u2019s disarmament and reintegration program, which is supposed to be their bridge back to civilian life. Since May, the military has clashed with armed groups in the northern Tibesti region and in the north of the neighbouring Central Africa Republic (CAR), near Chad\u2019s southern border, while the late July coup in Niger threatens to unsettle the western frontier. \r\n\r\nBut even against this troubled backdrop, the situation in Darfur may be the biggest challenge that N\u2019Djamena faces. The border between Sudan and Chad has long been volatile. Since Chad won independence from France in 1960, Darfur has served as a safe haven for Chadian rebels. In the 2000s, cross-border ties among ethnic Zaghawa led to years of proxy warfare between Chad and Sudan. Late Chadian President Idriss D\u00e9by Itno directly supported Darfuri rebel groups, such as the Justice and Equality Movement, now led by Jibril Ibrahim, and the Zaghawa wing of the Sudan Liberation Army/Movement, led by Minni Minnawi. He allowed them to use Chad as a rear base to fight Khartoum-backed Arab militias in Darfur. In response, former Sudanese President Omar al-Bashir backed Chadian rebel groups that launched an offensive on N\u2019Djamena in 2006 and another in 2008. To calm tensions, Khartoum and N\u2019Djamena signed a non-aggression pact in 2010, but cross-border family and clan connections remain strong, with the potential to influence national politics. ",
+            "coordinates": [
+                "18.51498435774687",
+                "15.55590967041499"
+            ],
+            "image": "/static/uploads/Screenshot_15.png"
+        }
     ]
 }

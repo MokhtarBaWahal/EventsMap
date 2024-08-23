@@ -7,7 +7,6 @@ const map = new mapboxgl.Map({
   zoom: 3
 });
 
-
 var currentTime = new Date()
 
 map.on('load', () => {
@@ -18,11 +17,9 @@ map.on('load', () => {
   map.setPaintProperty('land', 'background-color', '#e6e6e6'); // Customize this color to your preference
 });
 
-
 const coordinates_btn = document.getElementById('set-coordinates-btn');
 let addingEvent = false;
 
-// Handle the button click to hide the form
 if (coordinates_btn) {
     coordinates_btn.addEventListener('click', function() {
         var form = document.getElementById('event-form-container');
@@ -34,12 +31,9 @@ if (coordinates_btn) {
     });
 }
 
-
-
 const coordinates_location = document.getElementById('set-coordinates-location');
 let addingNewUser = false;
 
-// Handle the button click to hide the form
 if (coordinates_location) {
     coordinates_location.addEventListener('click', function() {
         var form = document.getElementById('login-form-container');
@@ -50,7 +44,7 @@ if (coordinates_location) {
         }
     });
 }
-// Handle map clicks
+
 map.on('click', function(e) {
   if (addingEvent || addingNewUser) {
     const coordinates = e.lngLat;  // Get the coordinates from the click event
@@ -61,14 +55,11 @@ map.on('click', function(e) {
         eventForm.style.display = 'flex';  // Show the form after the click
     }  else{
         userForm.style.display = 'flex';
-
     }
-
     map.getCanvas().classList.remove('add-event-cursor'); // Reset cursor
     addingEvent = false;  // Reset the flag
   }
 });
-
 
 (function () {
   'use strict';
@@ -86,13 +77,11 @@ map.on('click', function(e) {
         var min = (slider_century.getValue() - 1) * 100;
         var max = slider_century.getValue() * 100;
 
-        // Generate an array of values from min to max
         var newValues = [];
         for (var i = min; i <= max; i++) {
           newValues.push(i);
         }
 
-        // Update the scale with the generated values array
         slider.updateScale(newValues);
       }
     });
@@ -104,18 +93,14 @@ map.on('click', function(e) {
       range: true,
       set: [2000, 2024],
       onChange: function (vals) {
-
         const [startYear, endYear] = vals.split(',').map(Number);
-
         updateMap(startYear,endYear);
-
-          }
-        });
-      };
+      }
+    });
+  };
 
   window.onload = init;
 })();
-
 
 function getCentury(year) {
   const century = Math.ceil(year / 100);
@@ -123,47 +108,58 @@ function getCentury(year) {
   return century;
 }
 
-
-// Array to store markers and their associated year
 let markers = [];
 
 function updateMap(startYear, endYear) {
-  // Remove markers that are not in the selected range
   markers = markers.filter(markerObj => {
     if (markerObj.year < startYear || markerObj.year > endYear) {
-      markerObj.marker.remove(); // Remove the marker from the map
-      return false; // Remove the marker from the array
+      markerObj.marker.remove();
+      return false;
     }
-    return true; // Keep the marker in the array
+    return true;
   });
 
-  // Create an array of fetch requests for the selected years
   const fetchPromises = [];
 
   for (let year = startYear; year <= endYear; year++) {
     fetchPromises.push(fetch(`/events/${year}`).then(response => response.json()));
   }
 
-  // Wait for all fetch requests to complete
   Promise.all(fetchPromises)
     .then(allEvents => {
       allEvents.forEach(events => {
-        // For each year's events, add markers to the map
         events.forEach(event => {
-          // Create a popup for the event
-          const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(`
+          const popupContent = `
             <h3>${event.title}</h3>
-            <p>${event.description}</p>
-            <img src="${event.image}" alt="${event.title}" style="width: 100%;">
-          `);
+            <div class="popup-description">
+                <p>${event.description}</p>
+            </div>
+          `;
 
-          // Create a marker for the event
+          const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(popupContent);
+
+          // Fetch the image data for the event
+          if (event.image) {
+            fetch(event.image)
+              .then(response => response.blob())
+              .then(blob => {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                  const imgHTML = `<img src="${reader.result}" alt="${event.title}" style="width: 100%;">`;
+                  popup.setHTML(popupContent + imgHTML);
+                };
+                reader.readAsDataURL(blob);
+              })
+              .catch(error => console.error('Error fetching image:', error));
+          }
+
+          const coordinates = event.coordinates.map(Number);
+
           const marker = new mapboxgl.Marker()
-            .setLngLat(event.coordinates)
+            .setLngLat(coordinates)
             .setPopup(popup)
             .addTo(map);
 
-          // Store the marker and its associated year in the markers array
           markers.push({ marker, year: event.year });
         });
       });
@@ -173,4 +169,3 @@ function updateMap(startYear, endYear) {
       alert('Failed to load event data. Please try again later.');
     });
 }
-
