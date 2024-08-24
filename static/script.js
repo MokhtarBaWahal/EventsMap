@@ -169,3 +169,14 @@ function updateMap(startYear, endYear) {
       alert('Failed to load event data. Please try again later.');
     });
 }
+function showNavs() {
+  var x = document.getElementById("myLinks");
+  var con = document.getElementById("SliderContainer");
+  if (x.style.display === "block") {
+    con.style.display = "block";
+    x.style.display = "none";
+  } else {
+  con.style.display = "none";
+    x.style.display = "block";
+  }
+}

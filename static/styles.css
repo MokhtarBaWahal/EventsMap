@@ -21,6 +21,14 @@ header {
 header h1 {
     margin: 0;
 }
+#myLinks {
+  display: none;
+}
+.displayrow{
+
+display: flex;
+
+}
 
 header nav ul {
     display: flex;
@@ -69,6 +77,21 @@ nav-bar {
  text-align: center;
 
 }
+
+
+@media (min-width: 480px){
+
+.nav-menu{
+
+    display: block;
+
+}
+
+}
+
+
+
+
 
 #map {
     position: relative;
@@ -259,6 +282,7 @@ border-radius: 50px;
 .slider-container{
 
 padding-top: 10px;
+margin: 10px;
 }
 
 .add-event-cursor {
