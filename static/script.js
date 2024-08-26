@@ -2,7 +2,7 @@ mapboxgl.accessToken = 'pk.eyJ1IjoibW9raHRhcnNhbGVtcyIsImEiOiJjbHoybmhwYWwzMGZuM
 
 const map = new mapboxgl.Map({
   container: 'map',
-  style: 'mapbox://styles/mapbox/light-v11',
+  style: 'mapbox://styles/mapbox/satellite-v9',
   center: [0, 0],
   zoom: 3
 });
@@ -41,6 +41,41 @@ if (coordinates_location) {
             form.style.display = 'none';  // Hide the form when the button is clicked
             addingNewUser = true; // Set the flag to true to start adding events
             map.getCanvas().classList.add('add-event-cursor'); // Change cursor to indicate adding mode
+        }
+    });
+}
+const filters_btn = document.getElementById('show-filters-btn');
+const filters_btn_mobile = document.getElementById('show-filters-btn-m');
+
+function toggleFilters() {
+    var SliderContainer = document.getElementById('SliderContainer');
+    var FilterContainer = document.getElementById('FilterContainer');
+    if (SliderContainer && FilterContainer) {
+        SliderContainer.style.display = 'none';
+        FilterContainer.style.display = 'flex';
+    }
+}
+
+if (filters_btn) {
+    filters_btn.addEventListener('click', toggleFilters);
+}
+
+if (filters_btn_mobile) {
+    filters_btn_mobile.addEventListener('click', toggleFilters);
+}
+
+const close_icon = document.getElementById('close-icon');
+
+if (close_icon) {
+    close_icon.addEventListener('click', function() {
+        var SliderContainer = document.getElementById('SliderContainer');
+        var FilterContainer = document.getElementById('FilterContainer');
+        var Options = document.getElementById("myLinks");
+        if (SliderContainer && FilterContainer) {
+            if (Options.style.display != 'block') {
+                SliderContainer.style.display = 'block';
+                }
+            FilterContainer.style.display = 'none';
         }
     });
 }

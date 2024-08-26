@@ -243,8 +243,8 @@
 		if (this.values.start < 0) this.values.start = 0;
 
 		this.selected.style.width = (this.values.end - this.values.start) * this.step + 'px';
-		this.selected.style.left = this.values.start * this.step + 'px';		
-		
+		this.selected.style.left = this.values.start * this.step + 'px';
+
 		return this.onChange();
 	};
 

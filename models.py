@@ -41,6 +41,6 @@ class Pin(db.Model):
     description = db.Column(db.String(500), nullable=True)
     coordinates = db.Column(db.String(100), nullable=True)
     no_of_likes = db.Column(db.Integer, default=0)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'),
-                        nullable=False)  # Reference to the user who created the pin
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)  # Reference to the user who created the pin
     images = db.relationship('Image', backref='pin', lazy=True)  # Relationship to Image
+    year = db.Column(db.Integer, nullable=False)  # Year column, allowing negative values for BCE years

@@ -42,14 +42,15 @@ def index():
 # New get_events function using database
 @app.route('/events/<int:year>')
 def get_events(year):
-    events = Pin.query.filter(Pin.category == str(year)).all()
+    events = Pin.query.filter(Pin.year == int(year)).all()
     events_data = [
         {
             "title": event.title,
             "description": event.description,
             "coordinates": event.coordinates.split(','),
             "image": url_for('get_image', image_id=event.images[0].id) if event.images else None,
-            "year": event.category
+            "year": event.year,
+            "category": event.category
         }
         for event in events
     ]
@@ -67,6 +68,9 @@ def add_event():
         coordinates = request.form.get('coordinates')  # Assuming coordinates are submitted as a string
         coordinates = coordinates.split('and')  # Convert to a string of coordinates separated by a comma
 
+        # Retrieve the selected category from the form
+        category = request.form.get('category')
+
         # Handling the file upload
         image = request.files.get('image')
         if image and allowed_file(image.filename):
@@ -81,7 +85,8 @@ def add_event():
             # Create a new Pin (Event) and associate it with the uploaded image
             new_event = Pin(
                 title=title,
-                category=year,  # Assuming category represents the year
+                year=year,
+                category=category,  # Use the selected category
                 description=description,
                 coordinates=','.join(coordinates),
                 user_id=current_user.id
@@ -91,6 +96,7 @@ def add_event():
             db.session.commit()
 
             # Redirect or return success message
+            print("Commited")
             return redirect(url_for('index'))
 
         else:

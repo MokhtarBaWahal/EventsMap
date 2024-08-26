@@ -4,18 +4,65 @@
 {% block title %}Home - Interactive Historical Map{% endblock %}
 
 {% block content %}
-<div class="container" id="SliderContainer">
-
+<div class="container " id="SliderContainer">
     <div class="slider-container">
-            <input type="text" id="slider" class="slider" />
+        <input type="text" id="slider" class="slider" />
     </div>
+    <p class="p-regular " id ="first">Select Your Year Interval</p>
 
-    <div class="slider-container">
+    <div class="no-marginslider-container ">
         <input type="text" id="slider_century" class="slider" />
     </div>
-
+    <p class="no-margin">Select Your Century</p>
 </div>
 
+
+
+<!--&lt;!&ndash; Filtering Container &ndash;&gt;-->
+<!--<div id="FilterContainer">-->
+<!--  <div id="event-form">-->
+
+<div class="FilterContainer"  id="FilterContainer">
+ <div id="close-icon" class="close-icon">&times;</div>
+
+            <div class="form-check ">
+                <div class="form-check form-check-inline">
+                    <label class="form-check-label" for="personal">Filter Pins by Category:</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="personal" value="personal">
+                    <label class="form-check-label" for="personal">Personal</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="history" value="history">
+                    <label class="form-check-label" for="history">History</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="ad" value="ad">
+                    <label class="form-check-label" for="ad">Advertisement</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="suggestion" value="suggestion">
+                    <label class="form-check-label" for="suggestion">Education</label>
+                </div>
+            </div>
+
+            <div class="form-check">
+
+                <div class="form-check form-check-inline">
+                    <label class="form-check-label" for="personal">I want to see:</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="pinVisibility" id="allPins" value="all">
+                    <label class="form-check-label" for="allPins">All Pins</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="pinVisibility" id="unseenPins" value="unseen">
+                    <label class="form-check-label" for="unseenPins">Unseen Posts (45 unseen posts)</label>
+                </div>
+            </div>
+     <button type="submit" class="btn btn-info">Apply changes</button>
+</div>
 
 
 <!--  <div id="event-form" style="display: none;">-->

@@ -142,7 +142,18 @@ border-radius: 50px;
     width: 100%; /* Make sure all elements take the full width of the container */
 }
 
+.container {
+    text-align: center; /* Centers content within .container by default */
+}
 
+
+.p-regular #first{
+        margin-block-end: 0em;
+
+}
+.no-margin {
+  margin: 0;
+}
 .year-markers {
 
     position: absolute;
@@ -159,6 +170,8 @@ border-radius: 50px;
 }
 /* Container Flexbox Centering */
 #event-form-container {
+ text-align: left; /* Ensures each form-check is left-aligned */
+    display: block; /* Makes sure each item behaves like a block element */
     display: flex;
      z-index: 1000;
     justify-content: center;
@@ -246,6 +259,60 @@ border-radius: 50px;
   background-size: contain;
   cursor: pointer;
 }
+/* Ensure the container is overlaid */
+.FilterContainer {
+    display:none;
+    position: fixed; /* Keeps the container in place */
+    top: 50%; /* Center vertically */
+    left: 50%; /* Center horizontally */
+    transform: translate(-50%, -50%); /* Adjust for true centering */
+    width: 80%; /* Adjust width as needed */
+    max-width: 600px; /* Set a max-width to prevent it from being too wide */
+    background-color: white; /* Background color to make it stand out */
+    padding: 20px; /* Add padding inside the container */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add a shadow for better visibility */
+    z-index: 1000; /* Ensure it appears above other content */
+
+    flex-direction: column; /* Stack children vertically */
+    gap: 15px; /* Add space between elements */
+}
+
+/* Style the close icon */
+.close-icon {
+    position: absolute; /* Position relative to the container */
+    top: 10px;
+    left: 10px;
+    font-size: 24px;
+    cursor: pointer;
+    color: #000; /* Adjust color as needed */
+}
+
+/* Change color on hover */
+.close-icon:hover {
+    color: #ff0000;
+}
+
+/* Style the button */
+.btn {
+
+    margin-top: 15px; /* Add space above the button */
+    padding: 10px 20px; /* Adjust padding inside the button */
+}
+
+/* Additional styling for the button (optional) */
+.btn-primary {
+    background-color: #007bff; /* Primary button color */
+    border: none; /* Remove border */
+    color: white; /* Text color */
+    border-radius: 5px; /* Rounded corners */
+    cursor: pointer; /* Pointer cursor on hover */
+    font-size: 16px; /* Font size */
+}
+
+/* Button hover effect */
+.btn-primary:hover {
+    background-color: #0056b3; /* Darker shade on hover */
+}
 
 #year-input {
   width: 70px;
@@ -281,8 +348,7 @@ border-radius: 50px;
 
 .slider-container{
 
-padding-top: 10px;
-margin: 10px;
+margin: 30px 10px 0px 10px;
 }
 
 .add-event-cursor {
@@ -290,19 +356,10 @@ margin: 10px;
 }
 
 
-/* Container Flexbox Centering */
-#event-form-container {
-    display: flex;
-     z-index: 1000;
-    justify-content: center;
-    align-items: center;
-
-}
-
 /* Form Styling */
 #event-form {
-    width: 100%;
-    max-width: 400px; /* Limit form width */
+    width: 70%;
+
     top: 75px;
     background-color: #f8f9fa; /* Light background color */
     padding: 20px;
