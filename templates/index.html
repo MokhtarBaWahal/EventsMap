@@ -8,20 +8,33 @@
     <div class="slider-container">
         <input type="text" id="slider" class="slider" />
     </div>
-
     <div class="slider-container">
         <input type="text" id="slider_century" class="slider" />
     </div>
-    <a href="#" class="badge badge-light" style="width: 100%;">Browsing: BC (from 5000 BC to 2500 BC)</a>
 
-<div class="btn-group btn-group-toggle" data-toggle="buttons">
-  <label class="btn btn-info active">
-    <input type="radio" name="options" id="option1" autocomplete="off" checked> Show  BC Era
-  </label>
-  <label class="btn btn-info">
-    <input type="radio" name="options" id="option3" autocomplete="off"> AC
-  </label>
-</div>
+<nav aria-label="Page navigation example">
+  <ul class="pagination justify-content-between align-items-center">
+    <li class="page-item">
+      <a class="page-link" href="#" aria-label="Previous" id="eraChangerBC">
+        <span aria-hidden="true">&laquo;</span>
+        <span class="sr-only">Previous</span>
+      </a>
+    </li>
+    <span class="badge badge-info align-self-center">You are browsing history now!, Go BC, or AC.</span>
+    <li class="page-item">
+      <a class="page-link" href="#" aria-label="Next" id="eraChangerAC">
+        <span aria-hidden="true">&raquo;</span>
+        <span class="sr-only">Next</span>
+      </a>
+    </li>
+  </ul>
+</nav>
+
+
+
+
+
+
 
 
 

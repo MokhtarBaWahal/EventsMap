@@ -97,6 +97,13 @@ map.on('click', function(e) {
   }
 });
 
+function genValues(min, max){
+
+        var newValues = [];
+        for (var i = min; i <= max; i++) {
+          newValues.push(i);
+        }
+}
 (function () {
   'use strict';
 
@@ -108,8 +115,10 @@ map.on('click', function(e) {
       range: false,
       set: [getCentury(currentTime.getFullYear())],
       scale: true,
-      labels: false,
+      labels: true,
+
       onChange: function () {
+
         var min = (slider_century.getValue() - 1) * 100;
         var max = slider_century.getValue() * 100;
 
@@ -118,7 +127,12 @@ map.on('click', function(e) {
           newValues.push(i);
         }
 
-        slider.updateScale(newValues);
+        // Check if newValues is valid before updating scale
+        if (newValues.length > 0) {
+          slider.updateScale(newValues);
+        } else {
+          console.error('Error: Invalid newValues array.');
+        }
       }
     });
 
@@ -130,31 +144,43 @@ map.on('click', function(e) {
       set: [2000, 2024],
       onChange: function (vals) {
         const [startYear, endYear] = vals.split(',').map(Number);
-        updateMap(startYear,endYear);
+        updateMap(startYear, endYear);
       }
     });
+
+        function changeEra(min, max){
+
+
+        var newValues = [];
+        for (var i = min; i <= max; i++) {
+          newValues.push(i);
+        }
+        slider_century.updateScale(newValues);
+
+}
+const eraChangerBC = document.getElementById('eraChangerBC');
+const eraChangerAC = document.getElementById('eraChangerAC');
+
+if (eraChangerBC) {
+    eraChangerBC.addEventListener('click', function() {
+        changeEra(-50, 0);
+    });
+}
+
+if (eraChangerAC) {
+    eraChangerAC.addEventListener('click', function() {
+        changeEra(0, 21);
+    });
+}
+
+
   };
 
   window.onload = init;
 })();
 
-function changeEra(){
-
-        console.log('era clicked');
-        newValues = [];
-        for (var i = -5000; i <= 0; i++) {
-          newValues.push(i);
-        }
-        slider_century.updateScale(newValues);
 
 
-
-}
-const eraChanger = document.getElementById('eraChanger');
-
-if (eraChanger) {
-    eraChanger.addEventListener('click', changeEra);
-}
 
 function getCentury(year) {
   const century = Math.ceil(year / 100);
@@ -162,7 +188,13 @@ function getCentury(year) {
   return century;
 }
 
-let markers = [];
+let markers = [];function setMarkerImage(markerElement, imageUrl) {
+    markerElement.style.backgroundImage = `url(${imageUrl})`;
+    markerElement.style.backgroundSize = 'contain';
+    markerElement.style.backgroundRepeat = 'no-repeat';
+    markerElement.style.width = '30px';  // Adjust width as needed
+    markerElement.style.height = '40px'; // Adjust height as needed
+}
 
 function updateMap(startYear, endYear) {
     // Remove markers that are out of the specified year range or don't match the filters
@@ -178,11 +210,8 @@ function updateMap(startYear, endYear) {
     // Prepare an array to hold the promises for fetching events data
     const fetchPromises = [];
 
-    // Join the selected categories into a comma-separated string
-    const selectedCategories = filters.join(',');
-
     for (let year = startYear; year <= endYear; year++) {
-        // Fetch events for each year, including the selected categories as query parameters
+        // Fetch events for each year
         fetchPromises.push(fetch(`/events/${year}`).then(response => response.json()));
     }
 
@@ -200,14 +229,15 @@ function updateMap(startYear, endYear) {
 
                     console.log("adding ", event.title);
 
-                    // Create the popup content with the new buttons
+                    // Create the popup content
                     const popupContent = `
                         <h4>${event.title}</h4>
                         <h6>${event.date}</h6>
                         <div class="popup-description">
                             <p>${event.description}</p>
                         </div>
-                    `;
+
+                    `
 
                     // create the buttons after the image
                     const buttonsHTML = `
@@ -248,18 +278,38 @@ function updateMap(startYear, endYear) {
                     }
 
 
+                    // Create a custom marker element (e.g., a div for the image-based pin)
+                    const markerElement = document.createElement('div');
+                    markerElement.className = 'custom-marker';
+
+                    // Set the marker image (use your pin.png image here)
+                   switch(event.category) {
+                        case 'Places-to-Visit':
+                            setMarkerImage(markerElement, '/static/yelloy-pin.png');
+                            break;
+                        case 'Local-Products':
+                            setMarkerImage(markerElement, '/static/black-pin.png');
+                            break;
+                        case 'History':
+                            setMarkerImage(markerElement, '/static/red-pin.png');
+                            break;
+                        case 'Biographies':
+                            setMarkerImage(markerElement, '/static/blue-pin.png');
+                            break;
+                        default:
+                            setMarkerImage(markerElement, '/static/red-pin.png');
+                            break;
+                    }
 
 
-
-                    const coordinates = event.coordinates.map(Number);
-
-                    const marker = new mapboxgl.Marker()
-                        .setLngLat(coordinates)
-                        .setPopup(popup)
+                    // Add the marker with the image to the map
+                    const marker = new mapboxgl.Marker(markerElement)
+                        .setLngLat(event.coordinates.map(Number))
+                        .setPopup(popup) // Attach the popup to the marker
                         .addTo(map);
 
+                    // Add the marker to the markers array
                     markers.push({ marker, year: event.year, category: event.category, title: event.title });
-                    console.log(event.category);
                 });
             });
         })
@@ -268,6 +318,7 @@ function updateMap(startYear, endYear) {
             alert('Failed to load event data. Please try again later.');
         });
 }
+
 
 function showNavs() {
   var x = document.getElementById("myLinks");
@@ -323,4 +374,32 @@ if (applyFilters_btn) {
     applyFilters_btn.addEventListener('click', applyFilters);
 }
 
+// Function to check for the button and add the event listener
+function addScrollToTop() {
+    const closeButton = document.querySelector('.mapboxgl-popup-close-button');
 
+    if (closeButton) {
+        console.log("Button found, adding event listener.");
+        closeButton.addEventListener('click', function() {
+        console.log("Button clicked, scrolling to top."); // This should log when the button is clicked
+        window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+
+         document.documentElement.scrollTop = 0; // For most browsers
+    document.body.scrollTop = 0; // For Safari
+        });
+        return true; // Return true when the button is found and event listener is added
+    } else {
+        console.log("Button not found, retrying...");
+        return false; // Button not found, retry
+    }
+}
+
+// Set an interval to keep checking for the button every 500 milliseconds
+const checkInterval = setInterval(function() {
+    if (addScrollToTop()) {
+       console.log("OK");
+    }
+}, 500);

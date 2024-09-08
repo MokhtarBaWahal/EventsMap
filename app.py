@@ -38,12 +38,18 @@ def allowed_file(filename):
 def index():
     return render_template('index.html')
 
-
-# New get_events function using database
-@app.route('/events/<int:year>')
+@app.route('/events/<year>')
 def get_events(year):
+    try:
+        # Convert the year to an integer, including handling for negative values (BC years)
+        year = int(year)
+    except ValueError:
+        return jsonify({"error": "Invalid year format"}), 400
 
-    events = Pin.query.filter(Pin.year == int(year)).all()
+    # Query events for the specified year
+    events = Pin.query.filter(Pin.year == year).all()
+
+    # Prepare the events data
     events_data = [
         {
             "title": event.title,
@@ -55,7 +61,10 @@ def get_events(year):
         }
         for event in events
     ]
+
+    # Return the events as JSON
     return jsonify(events_data)
+
 
 
 # New add_event function using database
