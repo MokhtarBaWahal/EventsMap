@@ -4,23 +4,31 @@
 {% block title %}Home - Interactive Historical Map{% endblock %}
 
 {% block content %}
-<div class="container " id="SliderContainer">
+<div class="container" id="SliderContainer">
     <div class="slider-container">
         <input type="text" id="slider" class="slider" />
     </div>
-    <p class="p-regular " id ="first">Select Your Year Interval</p>
 
-    <div class="no-marginslider-container ">
+    <div class="slider-container">
         <input type="text" id="slider_century" class="slider" />
     </div>
-    <p class="no-margin">Select Your Century</p>
+    <a href="#" class="badge badge-light" style="width: 100%;">Browsing: BC (from 5000 BC to 2500 BC)</a>
+
+<div class="btn-group btn-group-toggle" data-toggle="buttons">
+  <label class="btn btn-info active">
+    <input type="radio" name="options" id="option1" autocomplete="off" checked> Show  BC Era
+  </label>
+  <label class="btn btn-info">
+    <input type="radio" name="options" id="option3" autocomplete="off"> AC
+  </label>
 </div>
 
 
 
-<!--&lt;!&ndash; Filtering Container &ndash;&gt;-->
-<!--<div id="FilterContainer">-->
-<!--  <div id="event-form">-->
+
+
+</div>
+
 
 <div class="FilterContainer"  id="FilterContainer">
  <div id="close-icon" class="close-icon">&times;</div>
@@ -30,20 +38,20 @@
                     <label class="form-check-label" for="personal">Filter Pins by Category:</label>
                 </div>
                 <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="checkbox" id="personal" value="personal">
-                    <label class="form-check-label" for="personal">Personal</label>
+                    <input class="form-check-input" type="checkbox" id="personal" value="Biographies" checked>
+                    <label class="form-check-label" for="personal">Biographies</label>
                 </div>
                 <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="checkbox" id="history" value="history">
+                    <input class="form-check-input" type="checkbox" id="history" value="History" checked>
                     <label class="form-check-label" for="history">History</label>
                 </div>
                 <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="checkbox" id="ad" value="ad">
-                    <label class="form-check-label" for="ad">Advertisement</label>
+                    <input class="form-check-input" type="checkbox" id="Local-Products" value="Local-Products" checked>
+                    <label class="form-check-label" for="Local-Products">Local Products</label>
                 </div>
                 <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="checkbox" id="suggestion" value="suggestion">
-                    <label class="form-check-label" for="suggestion">Education</label>
+                    <input class="form-check-input" type="checkbox" id="Places-to-Visit" value="Places-to-Visit" checked>
+                    <label class="form-check-label" for="Places-to-Visit">Places to Visit</label>
                 </div>
             </div>
 
@@ -61,65 +69,8 @@
                     <label class="form-check-label" for="unseenPins">Unseen Posts (45 unseen posts)</label>
                 </div>
             </div>
-     <button type="submit" class="btn btn-info">Apply changes</button>
+     <button type="submit" class="btn btn-info" id="ApplyFilters">Apply changes</button>
 </div>
-
-
-<!--  <div id="event-form" style="display: none;">-->
-<!--    <h3>Add New Event</h3>-->
-<!--    <form id="new-event-form">-->
-<!--      <input type="number" id="event-year" required><br>-->
-<!--      <label for="event-title">Title:</label>-->
-<!--      <input type="text" id="event-title" required><br>-->
-<!--      <label for="event-description">Description:</label>-->
-<!--      <textarea id="event-description" required></textarea><br>-->
-<!--      <label for="event-coordinates">Coordinates:</label>-->
-<!--      <input type="text" id="event-coordinates" readonly required><br>-->
-<!--      <label for="event-image">Image URL:</label>-->
-<!--      <input type="text" id="event-image" required><br>-->
-<!--      <button type="submit">Add Event</button>-->
-<!--    </form>-->
-<!--    <p>Click on the map to set the event coordinates.</p>-->
-<!--  </div>-->
-
-
-
-<!--&lt;!&ndash; Modal &ndash;&gt;-->
-<!--<div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModalTitle" aria-hidden="true">-->
-<!--    <div class="modal-dialog modal-dialog-centered" role="document">-->
-<!--        <div class="modal-content">-->
-<!--            <div class="modal-header login-form">-->
-<!--                <span slot="icon" class="s-login-modal-header-icon">-->
-<!--                    <img src="https://img.icons8.com/?size=100&id=15263&format=png&color=000000" width="100" height="100">-->
-<!--                </span>-->
-<!--                <h5 class="modal-title" id="loginModalTitle">Log In</h5>-->
-<!--            </div>-->
-<!--            <div class="modal-body" width="10">-->
-<!--                <form>-->
-<!--                    <div class="form-group">-->
-<!--                        <label for="exampleInputEmail1">Email</label>-->
-<!--                        <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter your email">-->
-<!--                    </div>-->
-<!--                    <div class="form-group">-->
-<!--                        <label for="exampleInputPassword1">Password</label>-->
-<!--                        <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Enter your password">-->
-<!--                    </div>-->
-<!--                </form>-->
-<!--            </div>-->
-<!--            <div class="modal-footer login-form">-->
-<!--                <button type="button" class="btn btn-outline-secondary form-control">Log In</button>-->
-<!--                <div class="form-row mt-3">-->
-<!--                    <div class="col text-left">-->
-<!--                        <a href="#" class="btn btn-link">New User?</a>-->
-<!--                    </div>-->
-<!--                    <div class="col text-right">-->
-<!--                        <a href="#" class="btn btn-link">Forgot Password?</a>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--</div>-->
 
 
 {% endblock %}

@@ -9,6 +9,9 @@ body, html {
 
 }
 header {
+
+    position: fixed;
+    z-index: 1000;
     width: 100%;
     padding: 10px 20px; /* Adds padding to the header */
     background-color: #f8f9fa; /* Light gray background for the header */
@@ -55,7 +58,51 @@ header .login-menu a {
     margin-left: 10px; /* Adds spacing between the login and sign-up buttons */
 }
 
+.popup-container {
+        width: 100%; /* Adjust this as needed */
+    }
 
+.popup-title {
+    white-space: nowrap;
+    overflow: hidden;
+    max-width: 100%;
+}
+
+.xx{
+width: 25%;
+}
+
+.mapboxgl-popup {
+        max-width: none; /* Override default max-width */
+        width: 300px; /* Set your desired width */
+    }
+
+.mapboxgl-popup-content{
+width: 300px;
+}
+.small-button, .slider {
+    display: inline-block; /* Puts the elements in a row */
+    vertical-align: middle; /* Aligns them vertically in the middle */
+    margin: 0 5px; /* Adds spacing between the buttons and slider */
+}
+
+.slider {
+    width: 200px; /* Adjust the width of the slider */
+}
+
+.like-button {
+        padding: 8px 16px;
+        border: none;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+    }
+
+    .like-button:hover {
+        background-color: #0056b3; /* Hover color */
+    }
 .logo-title {
   font-family: 'Times New Roman', Times, serif;
   font-size: 24px;
@@ -144,6 +191,8 @@ border-radius: 50px;
 
 .container {
     text-align: center; /* Centers content within .container by default */
+
+    margin-top: 80px;
 }
 
 
@@ -276,7 +325,6 @@ border-radius: 50px;
     flex-direction: column; /* Stack children vertically */
     gap: 15px; /* Add space between elements */
 }
-
 /* Style the close icon */
 .close-icon {
     position: absolute; /* Position relative to the container */
@@ -324,13 +372,6 @@ border-radius: 50px;
   text-align: center;
 }
 
-
-#top-bar {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  z-index: 1000;
-}
 
 .btn {
   background: #007bff;

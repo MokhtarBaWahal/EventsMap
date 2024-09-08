@@ -23,7 +23,19 @@
       <div class="form-group">
         <input type="password" class="form-control" id="confirm-password" name="confirm-password" placeholder="Confirm Password" required>
       </div>
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <div class="container mt-3">
+            {% for category, message in messages %}
+              <div class="alert alert-primary" role="alert">
 
+                {{ message }}
+
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
       <!-- Location Coordinates -->
       <button type="button" id="set-coordinates-location" class="btn btn-info">Set Coordinates</button><br>
       <input type="hidden" id="coordinates" name="coordinates" required><br>

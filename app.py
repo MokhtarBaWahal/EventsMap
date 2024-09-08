@@ -42,6 +42,7 @@ def index():
 # New get_events function using database
 @app.route('/events/<int:year>')
 def get_events(year):
+
     events = Pin.query.filter(Pin.year == int(year)).all()
     events_data = [
         {
@@ -105,6 +106,40 @@ def add_event():
     return render_template('add-event.html')
 
 
+@app.route('/filter_pins', methods=['POST'])
+def filter_pins():
+    filters = request.json
+    categories = filters.get('categories', [])
+    visibility = filters.get('visibility', 'all')
+
+    query = Pin.query
+
+    # Filter by categories
+    if categories:
+        query = query.filter(Pin.category.in_(categories))
+
+    # Filter by visibility
+    if visibility == 'unseen':
+        # Example logic for unseen pins (replace with actual implementation)
+        query = query.filter_by(seen=False)
+
+    filtered_pins = query.all()
+
+    pins_data = [
+        {
+            "title": pin.title,
+            "description": pin.description,
+            "coordinates": pin.coordinates.split(','),
+            "image": url_for('get_image', image_id=pin.images[0].id) if pin.images else None,
+            "year": pin.year,
+            "category": pin.category
+        }
+        for pin in filtered_pins
+    ]
+
+    return jsonify(pins_data)
+
+
 @app.route('/signup', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
@@ -116,7 +151,19 @@ def register():
 
         # Check if passwords match
         if password != confirm_password:
-            return "Passwords do not match", 400
+            flash("Passwords do not match", "error")
+            return redirect(url_for('register'))
+
+        # Check if the username already exists in the database
+        existing_user = User.query.filter_by(username=username).first()
+
+        if existing_user:
+            flash("Username already exists. Please choose another.", "error")
+            return redirect(url_for('register'))
+        existing_email = User.query.filter_by(email=email).first()
+        if existing_email:
+            flash("Email already exists. Please use another.", "error")
+            return redirect(url_for('register'))
 
         hashed_password = generate_password_hash(password, method='pbkdf2')
         user = User(username=username, email=email, password=hashed_password, coordinates=coordinates)

@@ -13,7 +13,7 @@
       {% endif %}
     </h3>
     <form method="POST" action="/add_event" enctype="multipart/form-data">
-      <input type="text" id="title" name="title" placeholder="Title" required><br>
+      <input type="text" id="title" name="title" placeholder="Title" maxlength ="19"required><br>
 
       <input type="number" id="year" name="year" placeholder="Year" required class="inline-input"><br>
 
@@ -26,20 +26,20 @@
       <div class="form-check">
         <label class="form-check-label">Category:</label><br>
         <div class="form-check form-check-inline">
-          <input class="form-check-input" type="radio" name="category" id="personal" value="personal" required>
-          <label class="form-check-label" for="personal">Personal</label>
+          <input class="form-check-input" type="radio" name="category" id="Biographies" value="Biographies" required>
+          <label class="form-check-label" for="Biographies">Personal</label>
         </div>
         <div class="form-check form-check-inline">
-          <input class="form-check-input" type="radio" name="category" id="history" value="history">
-          <label class="form-check-label" for="history">History</label>
+          <input class="form-check-input" type="radio" name="category" id="History" value="History">
+          <label class="form-check-label" for="History">History</label>
         </div>
         <div class="form-check form-check-inline">
-          <input class="form-check-input" type="radio" name="category" id="ad" value="ad">
-          <label class="form-check-label" for="ad">Advertisement</label>
+          <input class="form-check-input" type="radio" name="category" id="Local-Products" value="Local-Products">
+          <label class="form-check-label" for="Local-Products">Local Products</label>
         </div>
         <div class="form-check form-check-inline">
-          <input class="form-check-input" type="radio" name="category" id="suggestion" value="suggestion">
-          <label class="form-check-label" for="suggestion">Education</label>
+          <input class="form-check-input" type="radio" name="category" id="Places-to-Visit" value="Places-to-Visit">
+          <label class="form-check-label" for="Places-to-Visit">Places to Visit</label>
         </div>
       </div><br>
 

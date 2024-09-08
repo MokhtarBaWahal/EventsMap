@@ -8,14 +8,9 @@ const map = new mapboxgl.Map({
 });
 
 var currentTime = new Date()
+let filters = [];
+let showSeen = true;
 
-map.on('load', () => {
-  // Change the water color
-  map.setPaintProperty('water', 'fill-color', '#41b6c4'); // Customize this color to your preference
-
-  // Change the land color
-  map.setPaintProperty('land', 'background-color', '#e6e6e6'); // Customize this color to your preference
-});
 
 const coordinates_btn = document.getElementById('set-coordinates-btn');
 let addingEvent = false;
@@ -64,20 +59,26 @@ if (filters_btn_mobile) {
     filters_btn_mobile.addEventListener('click', toggleFilters);
 }
 
+
+function closeFiltersWindow(){
+
+var SliderContainer = document.getElementById('SliderContainer');
+var FilterContainer = document.getElementById('FilterContainer');
+var Options = document.getElementById("myLinks");
+if (SliderContainer && FilterContainer) {
+    if (Options.style.display != 'block') {
+        SliderContainer.style.display = 'block';
+        }
+    FilterContainer.style.display = 'none';
+}
+     }
+
+
+
 const close_icon = document.getElementById('close-icon');
 
 if (close_icon) {
-    close_icon.addEventListener('click', function() {
-        var SliderContainer = document.getElementById('SliderContainer');
-        var FilterContainer = document.getElementById('FilterContainer');
-        var Options = document.getElementById("myLinks");
-        if (SliderContainer && FilterContainer) {
-            if (Options.style.display != 'block') {
-                SliderContainer.style.display = 'block';
-                }
-            FilterContainer.style.display = 'none';
-        }
-    });
+    close_icon.addEventListener('click', closeFiltersWindow);
 }
 
 map.on('click', function(e) {
@@ -137,6 +138,24 @@ map.on('click', function(e) {
   window.onload = init;
 })();
 
+function changeEra(){
+
+        console.log('era clicked');
+        newValues = [];
+        for (var i = -5000; i <= 0; i++) {
+          newValues.push(i);
+        }
+        slider_century.updateScale(newValues);
+
+
+
+}
+const eraChanger = document.getElementById('eraChanger');
+
+if (eraChanger) {
+    eraChanger.addEventListener('click', changeEra);
+}
+
 function getCentury(year) {
   const century = Math.ceil(year / 100);
   console.log(`Year: ${year}, Century: ${century}`);
@@ -146,64 +165,110 @@ function getCentury(year) {
 let markers = [];
 
 function updateMap(startYear, endYear) {
-  markers = markers.filter(markerObj => {
-    if (markerObj.year < startYear || markerObj.year > endYear) {
-      markerObj.marker.remove();
-      return false;
-    }
-    return true;
-  });
-
-  const fetchPromises = [];
-
-  for (let year = startYear; year <= endYear; year++) {
-    fetchPromises.push(fetch(`/events/${year}`).then(response => response.json()));
-  }
-
-  Promise.all(fetchPromises)
-    .then(allEvents => {
-      allEvents.forEach(events => {
-        events.forEach(event => {
-          const popupContent = `
-            <h3>${event.title}</h3>
-            <div class="popup-description">
-                <p>${event.description}</p>
-            </div>
-          `;
-
-          const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(popupContent);
-
-          // Fetch the image data for the event
-          if (event.image) {
-            fetch(event.image)
-              .then(response => response.blob())
-              .then(blob => {
-                const reader = new FileReader();
-                reader.onloadend = () => {
-                  const imgHTML = `<img src="${reader.result}" alt="${event.title}" style="width: 100%;">`;
-                  popup.setHTML(popupContent + imgHTML);
-                };
-                reader.readAsDataURL(blob);
-              })
-              .catch(error => console.error('Error fetching image:', error));
-          }
-
-          const coordinates = event.coordinates.map(Number);
-
-          const marker = new mapboxgl.Marker()
-            .setLngLat(coordinates)
-            .setPopup(popup)
-            .addTo(map);
-
-          markers.push({ marker, year: event.year });
-        });
-      });
-    })
-    .catch(error => {
-      console.error('Error fetching events:', error);
-      alert('Failed to load event data. Please try again later.');
+    // Remove markers that are out of the specified year range or don't match the filters
+    markers = markers.filter(markerObj => {
+        if (markerObj.year < startYear || markerObj.year > endYear || !filters.includes(markerObj.category)) {
+            console.log('removing ', markerObj.title);
+            markerObj.marker.remove();
+            return false;
+        }
+        return true;
     });
+
+    // Prepare an array to hold the promises for fetching events data
+    const fetchPromises = [];
+
+    // Join the selected categories into a comma-separated string
+    const selectedCategories = filters.join(',');
+
+    for (let year = startYear; year <= endYear; year++) {
+        // Fetch events for each year, including the selected categories as query parameters
+        fetchPromises.push(fetch(`/events/${year}`).then(response => response.json()));
+    }
+
+    console.log("fetched");
+
+    Promise.all(fetchPromises)
+        .then(allEvents => {
+            allEvents.forEach(events => {
+                events.forEach(event => {
+                    // Skip events that don't match the category filter
+                    if (filters.length > 0 && !filters.includes(event.category)) {
+                        console.log("Skipped");
+                        return;
+                    }
+
+                    console.log("adding ", event.title);
+
+                    // Create the popup content with the new buttons
+                    const popupContent = `
+                        <h4>${event.title}</h4>
+                        <h6>${event.date}</h6>
+                        <div class="popup-description">
+                            <p>${event.description}</p>
+                        </div>
+                    `;
+
+                    // create the buttons after the image
+                    const buttonsHTML = `
+                        <button type="button" class="btn btn-outline-danger">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-heart" viewBox="0 0 16 16">
+                              <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143q.09.083.176.171a3 3 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15"></path>
+                            </svg>
+                            1K
+                        </button>
+
+                        <button type="button" class="btn btn-success">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chat-left" viewBox="0 0 16 16">
+                              <path d="M14 1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H4.414A2 2 0 0 0 3 11.586l-2 2V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12.793a.5.5 0 0 0 .854.353l2.853-2.853A1 1 0 0 1 4.414 12H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"></path>
+                            </svg>
+                            Comment
+                        </button>
+                    `;
+
+                    const popup = new mapboxgl.Popup({ offset: 50 }).setHTML(popupContent);
+
+
+
+                    // Fetch the image data for the event, if available
+                    if (event.image) {
+                        fetch(event.image)
+                            .then(response => response.blob())
+                            .then(blob => {
+                                const reader = new FileReader();
+                                reader.onloadend = () => {
+                                    const imgHTML = `<img src="${reader.result}" alt="${event.title}" style="width: 100%;">`;
+
+                                    // Update the popup content with the image and buttons
+                                    popup.setHTML(popupContent + imgHTML + buttonsHTML);
+                                };
+                                reader.readAsDataURL(blob);
+                            })
+                            .catch(error => console.error('Error fetching image:', error));
+                    }
+
+
+
+
+
+                    const coordinates = event.coordinates.map(Number);
+
+                    const marker = new mapboxgl.Marker()
+                        .setLngLat(coordinates)
+                        .setPopup(popup)
+                        .addTo(map);
+
+                    markers.push({ marker, year: event.year, category: event.category, title: event.title });
+                    console.log(event.category);
+                });
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching events:', error);
+            alert('Failed to load event data. Please try again later.');
+        });
 }
+
 function showNavs() {
   var x = document.getElementById("myLinks");
   var con = document.getElementById("SliderContainer");
@@ -215,3 +280,47 @@ function showNavs() {
     x.style.display = "block";
   }
 }
+
+
+
+
+function applyFilters() {
+    // Clear the current filters
+    filters = [];
+    filters.push('all-pins');
+    // Get all the checkbox elements for the categories
+    const checkboxes = document.querySelectorAll('.form-check-input[type="checkbox"]');
+
+    // Loop through each checkbox to see if it's checked
+    checkboxes.forEach(function(checkbox) {
+        if (checkbox.checked) {
+            filters.push(checkbox.value);  // Add the value of the checked checkbox to the filters array
+        }
+    });
+
+    // Get the selected pin visibility option
+    const visibility = document.querySelector('.form-check-input[name="pinVisibility"]:checked');
+    if (visibility) {
+        showSeen = visibility.value === 'all';  // Set showSeen to true if 'all' is selected, false otherwise
+    }
+
+    // Debugging: Log the filters and showSeen values to verify they are correct
+    console.log("Selected Filters:", filters);
+    console.log("Show All Pins:", showSeen);
+    const sliderValues = document.querySelector('#slider').value.split(',').map(Number);
+    const [startYear, endYear] = sliderValues;
+
+    // Call updateMap with the selected years and categories
+    updateMap(startYear, endYear);
+    closeFiltersWindow();
+    // Optionally, you could now call a function to update the display based on the new filters
+    // For example, you might want to send an AJAX request to update the displayed pins
+}
+
+// Attach the applyFilters function to the button click event
+const applyFilters_btn = document.getElementById('ApplyFilters');
+if (applyFilters_btn) {
+    applyFilters_btn.addEventListener('click', applyFilters);
+}
+
+
