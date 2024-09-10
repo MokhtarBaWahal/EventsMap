@@ -1,5 +1,7 @@
 import io
 
+import zipfile
+
 from flask import Flask, render_template, jsonify, request, redirect, url_for, flash, send_file
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
@@ -8,7 +10,7 @@ from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
 
 # Import models and db from models.py
-from models import db, User, Pin, Image
+from models import db, User, Pin, Image, Comment
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_secret_key'
@@ -38,6 +40,7 @@ def allowed_file(filename):
 def index():
     return render_template('index.html')
 
+
 @app.route('/events/<year>')
 def get_events(year):
     try:
@@ -51,20 +54,23 @@ def get_events(year):
 
     # Prepare the events data
     events_data = [
-        {
-            "title": event.title,
-            "description": event.description,
-            "coordinates": event.coordinates.split(','),
-            "image": url_for('get_image', image_id=event.images[0].id) if event.images else None,
-            "year": event.year,
-            "category": event.category
-        }
+        {"id": event.id,
+         "title": event.title,
+         "description": event.description,
+         "coordinates": event.coordinates.split(','),
+         "image": url_for('get_image', image_id=event.images[0].id) if event.images else None,
+         "year": event.year,
+         "category": event.category,
+         "no_of_likes": event.no_of_likes,
+         "is_liked": event in current_user.liked_pins if current_user.is_authenticated else False,
+         "like_state": "btn btn-outline-danger" if current_user.is_authenticated and event in current_user.liked_pins else "btn btn-danger",
+         "date": event.date_created.strftime('%Y/%m/%d') if event.date_created else None
+         }
         for event in events
     ]
 
     # Return the events as JSON
     return jsonify(events_data)
-
 
 
 # New add_event function using database
@@ -214,6 +220,89 @@ def get_image(image_id):
     return send_file(io.BytesIO(image.image_data), mimetype='image/jpeg')
 
 
+@app.route('/like/<int:pin_id>', methods=['POST'])
+@login_required
+def like_pin(pin_id):
+    pin = Pin.query.get_or_404(pin_id)
+
+    if pin in current_user.liked_pins:
+        current_user.liked_pins.remove(pin)
+        pin.no_of_likes -= 1
+        liked = False
+    else:
+        current_user.liked_pins.append(pin)
+        pin.no_of_likes += 1
+        liked = True
+
+    db.session.commit()
+
+    return jsonify({
+        'success': True,
+        'liked': liked,
+        'new_like_count': pin.no_of_likes
+    })
+
+
+@app.route('/download_images')
+def download_images():
+    # Create an in-memory zip file
+    zip_buffer = io.BytesIO()
+
+    # Create a zip file object
+    with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+        # Query all the images from the database
+        images = Image.query.all()
+
+        # Loop over all the images and add them to the zip file
+        for image in images:
+            # For each image, create a filename (you can customize this format)
+            image_filename = f"pin_{image.pin_id}_image_{image.id}.jpg"
+
+            # Add the image data to the zip file with the generated filename
+            zip_file.writestr(image_filename, image.image_data)
+
+    # Set the buffer's position to the start
+    zip_buffer.seek(0)
+
+    # Send the zip file as a response
+    return send_file(zip_buffer, as_attachment=True, download_name='pin_images.zip', mimetype='application/zip')
+
+
+@app.route('/get_comments/<int:pin_id>', methods=['GET'])
+def get_comments(pin_id):
+    comments = Comment.query.filter_by(pin_id=pin_id).all()
+    comments_data = []
+
+    # Convert comment objects to JSON-serializable dictionaries
+    for comment in comments:
+        comments_data.append({
+            'id': comment.id,
+            'text': comment.text,
+            'timestamp': comment.timestamp.strftime('%Y-%m-%d %H:%M:%S'),
+            'user': comment.user_id  # You can modify this to include user name if necessary
+        })
+
+    return jsonify(comments_data)
+
+
+@app.route('/submit_comment', methods=['POST'])
+def submit_comment():
+    data = request.get_json()
+    pin_id = data.get('pin_id')
+    text = data.get('text')
+
+    if not text or not pin_id:
+        return jsonify({'error': 'Invalid input'}), 400
+
+    # Assuming user_id is available (e.g., from session or JWT token)
+    user_id = 1  # Replace with logic to get the actual user ID
+
+    # Create a new comment and save it to the database
+    new_comment = Comment(text=text, pin_id=pin_id, user_id=user_id)
+    db.session.add(new_comment)
+    db.session.commit()
+
+    return jsonify({'message': 'Comment submitted successfully!'})
 # Function to initialize the database
 def initialize_database():
     with app.app_context():

@@ -7,6 +7,10 @@ const map = new mapboxgl.Map({
   zoom: 3
 });
 
+
+var currentPinId;
+
+
 var currentTime = new Date()
 let filters = [];
 let showSeen = true;
@@ -232,7 +236,8 @@ function updateMap(startYear, endYear) {
                     // Create the popup content
                     const popupContent = `
                         <h4>${event.title}</h4>
-                        <h6>${event.date}</h6>
+                        <p>${event.date}</p>
+
                         <div class="popup-description">
                             <p>${event.description}</p>
                         </div>
@@ -241,14 +246,15 @@ function updateMap(startYear, endYear) {
 
                     // create the buttons after the image
                     const buttonsHTML = `
-                        <button type="button" class="btn btn-outline-danger">
+                        <button type="button" class="${event.like_state}" id ="like-btn" onclick="likePin(${event.id})">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-heart" viewBox="0 0 16 16">
-                              <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143q.09.083.176.171a3 3 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15"></path>
+                                <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143q.09.083.176.171a3 3 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15"></path>
                             </svg>
-                            1K
+                            <span id="like-count">${event.no_of_likes}</span>
                         </button>
 
-                        <button type="button" class="btn btn-success">
+
+                        <button type="button" class="btn btn-success" id ="comment-btn" onclick="commentPin(${event.id})">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chat-left" viewBox="0 0 16 16">
                               <path d="M14 1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H4.414A2 2 0 0 0 3 11.586l-2 2V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12.793a.5.5 0 0 0 .854.353l2.853-2.853A1 1 0 0 1 4.414 12H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"></path>
                             </svg>
@@ -379,9 +385,9 @@ function addScrollToTop() {
     const closeButton = document.querySelector('.mapboxgl-popup-close-button');
 
     if (closeButton) {
-        console.log("Button found, adding event listener.");
+
         closeButton.addEventListener('click', function() {
-        console.log("Button clicked, scrolling to top."); // This should log when the button is clicked
+
         window.scrollTo({
                 top: 0,
                 behavior: 'smooth'
@@ -392,7 +398,7 @@ function addScrollToTop() {
         });
         return true; // Return true when the button is found and event listener is added
     } else {
-        console.log("Button not found, retrying...");
+
         return false; // Button not found, retry
     }
 }
@@ -400,6 +406,122 @@ function addScrollToTop() {
 // Set an interval to keep checking for the button every 500 milliseconds
 const checkInterval = setInterval(function() {
     if (addScrollToTop()) {
-       console.log("OK");
+
     }
 }, 500);
+function likePin(pinId) {
+    console.log(pinId, "Liked");
+
+    // Send the like request to the server using Fetch API
+    fetch(`/like/${pinId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrf_token')  // Assuming you are using CSRF tokens
+        },
+        credentials: 'same-origin'  // Include cookies with request
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Update the like count on the frontend
+            const likeCountElement = document.getElementById('like-count');
+            likeCountElement.innerText = data.new_like_count;
+
+            // Toggle the button color based on the 'liked' status
+            const likeButton = document.getElementById('like-btn');
+
+            if (data.liked) {
+                // Remove the outline class if it's liked, and add the filled red class
+                likeButton.classList.remove('btn-outline-danger');
+                likeButton.classList.add('btn-danger');
+            } else {
+                // Remove the filled red class if unliked, and add the outline class
+                likeButton.classList.remove('btn-danger');
+                likeButton.classList.add('btn-outline-danger');
+            }
+        } else {
+            console.error('Error liking pin:', data.message);
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+// Optional: Helper function to get CSRF token from cookies
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+
+function commentPin(pinId) {
+    var commentModal = new bootstrap.Modal(document.getElementById('commentPopup'));
+    commentModal.show();
+
+    // Make an AJAX request to get the comments for the pin
+    $.ajax({
+        url: `/get_comments/${pinId}`,
+        type: 'GET',
+        success: function (comments) {
+            var commentSection = document.getElementById('commentSection');
+            commentSection.innerHTML = ''; // Clear existing comments
+
+            comments.forEach(function (comment) {
+                var commentHTML = `
+                    <div class="card mb-4">
+                      <div class="card-body">
+                        <p>${comment.text}</p>
+                        <div class="justify-content-between">
+                          <div class="d-flex flex-row align-items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person" viewBox="0 0 16 16">
+                              <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0m4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4m-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10s-3.516.68-4.168 1.332c-.678.678-.83 1.418-.832 1.664z"></path>
+                            </svg>
+                            <p class="small mb-0 ms-2">${comment.user}</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>`;
+
+                // Append the comment HTML to the comment section
+                commentSection.innerHTML += commentHTML;
+            });
+        },
+        error: function () {
+            console.error('Failed to fetch comments');
+        }
+    });
+}
+
+
+document.getElementById('submitComment').addEventListener('click', function() {
+        var pinId = 1;
+        var commentText = document.getElementById('addANote').value;
+
+        // Send the comment to the server via AJAX
+        $.ajax({
+            url: '/submit_comment',
+            type: 'POST',
+            data: JSON.stringify({ pin_id: pinId, text: commentText }),
+            contentType: 'application/json',
+            success: function(response) {
+                // Optionally, update the comments section after successfully posting
+                console.log('Comment submitted successfully!');
+                document.getElementById('addANote').value = ''; // Clear the input field
+                // Optionally refresh comments
+                commentPin(pinId);
+            },
+            error: function(error) {
+                console.error('Error submitting comment', error);
+            }
+        });
+    });
