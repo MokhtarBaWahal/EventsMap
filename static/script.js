@@ -9,11 +9,13 @@ const map = new mapboxgl.Map({
 
 
 var currentPinId;
-
-
-var currentTime = new Date()
+var currentTime = new Date();
 let filters = [];
+let seenPins = [];
 let showSeen = true;
+
+
+
 
 
 const coordinates_btn = document.getElementById('set-coordinates-btn');
@@ -43,6 +45,7 @@ if (coordinates_location) {
         }
     });
 }
+
 const filters_btn = document.getElementById('show-filters-btn');
 const filters_btn_mobile = document.getElementById('show-filters-btn-m');
 
@@ -183,9 +186,6 @@ if (eraChangerAC) {
   window.onload = init;
 })();
 
-
-
-
 function getCentury(year) {
   const century = Math.ceil(year / 100);
   console.log(`Year: ${year}, Century: ${century}`);
@@ -207,6 +207,15 @@ function updateMap(startYear, endYear) {
             console.log('removing ', markerObj.title);
             markerObj.marker.remove();
             return false;
+        }
+
+        if( !showSeen && !seenPins.includes(markerObj.id)){
+
+
+         console.log('removing ', markerObj.title);
+            markerObj.marker.remove();
+            return false;
+
         }
         return true;
     });
@@ -231,12 +240,23 @@ function updateMap(startYear, endYear) {
                         return;
                     }
 
+                    if( !showSeen && !seenPins.includes(event.id)) {
+                        console.log("Skipped");
+                        return;
+                    }
+
                     console.log("adding ", event.title);
 
                     // Create the popup content
                     const popupContent = `
+                    <div data-event-id="${event.id}">
                         <h4>${event.title}</h4>
-                        <p>${event.date}</p>
+                        <div style="display: inline-block;">
+
+                            <p style="display: inline;">${ event.author }</p>
+                            <p style="display: inline; margin-right: 10px;">${ event.date }</p>
+
+                        </div>
 
                         <div class="popup-description">
                             <p>${event.description}</p>
@@ -244,23 +264,45 @@ function updateMap(startYear, endYear) {
 
                     `
 
-                    // create the buttons after the image
-                    const buttonsHTML = `
-                        <button type="button" class="${event.like_state}" id ="like-btn" onclick="likePin(${event.id})">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-heart" viewBox="0 0 16 16">
-                                <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143q.09.083.176.171a3 3 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15"></path>
-                            </svg>
-                            <span id="like-count">${event.no_of_likes}</span>
-                        </button>
 
 
-                        <button type="button" class="btn btn-success" id ="comment-btn" onclick="commentPin(${event.id})">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chat-left" viewBox="0 0 16 16">
-                              <path d="M14 1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H4.414A2 2 0 0 0 3 11.586l-2 2V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12.793a.5.5 0 0 0 .854.353l2.853-2.853A1 1 0 0 1 4.414 12H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"></path>
-                            </svg>
-                            Comment
-                        </button>
-                    `;
+                    // Assuming event.is_author is a boolean indicating if the current user is the author of the pin
+let buttonsHTML = `
+    <button type="button" class="${event.like_state}" id="like-btn" onclick="likePin(${event.id})">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-heart" viewBox="0 0 16 16">
+            <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143q.09.083.176.171a3 3 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15"></path>
+        </svg>
+        <span id="like-count">${event.no_of_likes}</span>
+    </button>
+
+    <button type="button" class="btn btn-success" id="comment-btn" onclick="commentPin(${event.id})">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chat-left" viewBox="0 0 16 16">
+            <path d="M14 1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H4.414A2 2 0 0 0 3 11.586l-2 2V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12.793a.5.5 0 0 0 .854.353l2.853-2.853A1 1 0 0 1 4.414 12H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"></path>
+        </svg>
+        Comment
+    </button>
+`;
+
+// Only add the delete button if the current user is the author of the pin
+if (event.is_author) {
+    buttonsHTML += `
+        <form action="/delete_pin/${event.id}" method="post" style="display:inline;">
+            <!-- CSRF token if using Flask-WTF -->
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="btn btn-secondary">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                    <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"></path>
+                    <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"></path>
+                </svg>
+
+            </button>
+        </form>
+    `;
+}
+
+
+
+
 
                     const popup = new mapboxgl.Popup({ offset: 50 }).setHTML(popupContent);
 
@@ -281,6 +323,12 @@ function updateMap(startYear, endYear) {
                                 reader.readAsDataURL(blob);
                             })
                             .catch(error => console.error('Error fetching image:', error));
+                    } else{
+
+
+                    popup.setHTML(popupContent + buttonsHTML);
+
+
                     }
 
 
@@ -315,31 +363,47 @@ function updateMap(startYear, endYear) {
                         .addTo(map);
 
                     // Add the marker to the markers array
-                    markers.push({ marker, year: event.year, category: event.category, title: event.title });
+                    markers.push({ marker, year: event.year, category: event.category, title: event.title, id: event.id });
                 });
             });
         })
         .catch(error => {
             console.error('Error fetching events:', error);
-            alert('Failed to load event data. Please try again later.');
+            console.log(event);
+            console.errr('Failed to load event data. Please try again later.');
         });
 }
 
-
 function showNavs() {
-  var x = document.getElementById("myLinks");
+  var links = document.getElementById("myLinks");
   var con = document.getElementById("SliderContainer");
-  if (x.style.display === "block") {
-    con.style.display = "block";
-    x.style.display = "none";
-  } else {
-  con.style.display = "none";
-    x.style.display = "block";
+  var eventCon = document.getElementById("event-form-container");
+
+  if (links && con){
+    if (links.style.display === "block") {
+
+        con.style.display = "block";
+        links.style.display = "none";
+    } else {
+        con.style.display = "none";
+        links.style.display = "block";
+    }
+  } else if (links && eventCon){
+
+      if (links.style.display === "block") {
+
+        eventCon.style.display = "flex";
+        links.style.display = "none";
+    } else {
+        eventCon.style.display = "none";
+        links.style.display = "block";
+    }
+
+
+
   }
+
 }
-
-
-
 
 function applyFilters() {
     // Clear the current filters
@@ -361,6 +425,18 @@ function applyFilters() {
         showSeen = visibility.value === 'all';  // Set showSeen to true if 'all' is selected, false otherwise
     }
 
+    if (!showSeen) {
+    // Fetch unseen pins only if the user wants to see unseen pins
+    fetch('/unseen_pins')
+        .then(response => response.json())
+        .then(data => {
+            seenPins = data.unseen_pin_ids;
+            console.log('Unseen pin IDs:', seenPins);
+            // You can now use the seenPins array to handle visibility in your application
+        })
+        .catch(error => console.error('Error fetching unseen pins:', error));
+        }
+
     // Debugging: Log the filters and showSeen values to verify they are correct
     console.log("Selected Filters:", filters);
     console.log("Show All Pins:", showSeen);
@@ -370,8 +446,6 @@ function applyFilters() {
     // Call updateMap with the selected years and categories
     updateMap(startYear, endYear);
     closeFiltersWindow();
-    // Optionally, you could now call a function to update the display based on the new filters
-    // For example, you might want to send an AJAX request to update the displayed pins
 }
 
 // Attach the applyFilters function to the button click event
@@ -380,11 +454,66 @@ if (applyFilters_btn) {
     applyFilters_btn.addEventListener('click', applyFilters);
 }
 
+function markPinAsSeen(eventId) {
+    // Send the event ID to the server to mark it as seen
+    fetch('/mark_as_seen', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ 'event_id': eventId })
+    })
+    .then(response => {
+        // Check if the response is JSON
+        if (response.headers.get('content-type')?.includes('application/json')) {
+            return response.json();
+        } else {
+            throw new Error('Not authenticated or server error');
+        }
+    })
+    .then(data => {
+        if (data.success) {
+            console.log('Event marked as seen:', eventId);
+            seenPins.push(eventId);
+        } else {
+            console.log('Failed to mark event as seen:', data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        // Redirect to login page or show a login prompt
+        window.location.href = '/login';
+    });
+}
+
+
+// Function to get CSRF token if using Flask-WTF for CSRF protection
+function getCSRFToken() {
+    return document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+}
+ let btn_found =false;
 // Function to check for the button and add the event listener
 function addScrollToTop() {
+
+
+
     const closeButton = document.querySelector('.mapboxgl-popup-close-button');
 
     if (closeButton) {
+        btn_found = true;
+        const contentBox = document.querySelector('.mapboxgl-popup-content');
+        if (contentBox) {
+        const childElement = contentBox.querySelector('[data-event-id]');
+        if (childElement) {
+            const eventId = childElement.getAttribute('data-event-id');
+            console.log('Event ID:', eventId);
+            markPinAsSeen(eventId);
+        } else {
+            console.error('Child element with data-event-id not found');
+        }
+        } else {
+            console.error('Element with class .mapboxgl-popup-content not found');
+        }
 
         closeButton.addEventListener('click', function() {
 
@@ -395,6 +524,7 @@ function addScrollToTop() {
 
          document.documentElement.scrollTop = 0; // For most browsers
     document.body.scrollTop = 0; // For Safari
+    btn_found= false;
         });
         return true; // Return true when the button is found and event listener is added
     } else {
@@ -405,9 +535,7 @@ function addScrollToTop() {
 
 // Set an interval to keep checking for the button every 500 milliseconds
 const checkInterval = setInterval(function() {
-    if (addScrollToTop()) {
-
-    }
+    if (!btn_found && addScrollToTop() ) {}
 }, 500);
 function likePin(pinId) {
     console.log(pinId, "Liked");
@@ -463,16 +591,17 @@ function getCookie(name) {
     return cookieValue;
 }
 
-
 function commentPin(pinId) {
     var commentModal = new bootstrap.Modal(document.getElementById('commentPopup'));
     commentModal.show();
+    currentPinId = pinId;
 
     // Make an AJAX request to get the comments for the pin
     $.ajax({
         url: `/get_comments/${pinId}`,
         type: 'GET',
         success: function (comments) {
+            console.log("Adding comments!!!!!!!!!!", pinId);
             var commentSection = document.getElementById('commentSection');
             commentSection.innerHTML = ''; // Clear existing comments
 
@@ -503,25 +632,32 @@ function commentPin(pinId) {
 }
 
 
-document.getElementById('submitComment').addEventListener('click', function() {
-        var pinId = 1;
-        var commentText = document.getElementById('addANote').value;
+const submitCommentBtn = document.getElementById('submitComment');
 
-        // Send the comment to the server via AJAX
-        $.ajax({
-            url: '/submit_comment',
-            type: 'POST',
-            data: JSON.stringify({ pin_id: pinId, text: commentText }),
-            contentType: 'application/json',
-            success: function(response) {
-                // Optionally, update the comments section after successfully posting
-                console.log('Comment submitted successfully!');
-                document.getElementById('addANote').value = ''; // Clear the input field
-                // Optionally refresh comments
-                commentPin(pinId);
-            },
-            error: function(error) {
-                console.error('Error submitting comment', error);
-            }
+if (submitCommentBtn){
+
+    submitCommentBtn.addEventListener('click', function() {
+            var pinId = currentPinId;
+            var commentText = document.getElementById('addANote').value;
+
+            // Send the comment to the server via AJAX
+            $.ajax({
+                url: '/submit_comment',
+                type: 'POST',
+                data: JSON.stringify({ pin_id: pinId, text: commentText }),
+                contentType: 'application/json',
+                success: function(response) {
+                    // Optionally, update the comments section after successfully posting
+                    console.log('Comment submitted successfully!');
+                    document.getElementById('addANote').value = ''; // Clear the input field
+                    // Optionally refresh comments
+                    commentPin(pinId);
+                },
+                error: function(error) {
+                    console.error('Error submitting comment', error);
+                }
+            });
         });
-    });
+
+
+}

@@ -5,7 +5,7 @@
 {% block title %}Login{% endblock %}
 
 {% block content %}
-<div id="login-form-container">
+<div id="event-form-container">
   <div id="content-form" class="content-form">
     <h3>Login</h3>
       <form method="POST" action="/login" enctype="multipart/form-data">
@@ -17,8 +17,59 @@
         <label for="password">Password</label>
         <input type="password" class="form-control" id="password"  name="password" placeholder="Password">
       </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <div class="container mt-3">
+            {% for category, message in messages %}
+              <div class="alert alert-primary" role="alert">
+
+                {{ message }}
+
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
       <button id="set-coordinates-location" class="btn btn-info">Login</button><br>
+        <a class="btn btn-link" data-mdb-toggle="modal" data-mdb-target="#exampleModal">Forgot Password?</a>
       </form>
+
   </div>
 </div>
+
+
+
+
+<!-- Modal -->
+<div class="modal top fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-mdb-backdrop="true" data-mdb-keyboard="true">
+    <div class="modal-dialog" style="width: 300px;">
+        <div class="modal-content text-center">
+            <div class="modal-header h5 text-white bg-primary justify-content-center">
+                Password Reset
+            </div>
+            <div class="modal-body px-5">
+                <p class="py-2">
+                    Enter your email address and we'll send you an email with instructions to reset your password.
+                </p>
+                <form method="POST" action="/forgot-password">
+                    <div data-mdb-input-init class="form-outline">
+                        <input type="email" id="typeEmail" name="email" class="form-control my-3" required />
+                        <label class="form-label" for="typeEmail">Email input</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Reset password</button>
+                </form>
+                <div class="d-flex justify-content-between mt-4">
+                    <a class="" href="#">Login</a>
+                    <a class="" href="#">Register</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MDBootstrap JavaScript -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.0.1/mdb.min.js"></script>
+
+
 {% endblock %}

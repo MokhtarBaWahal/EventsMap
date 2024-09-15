@@ -13,21 +13,18 @@
       {% endif %}
     </h3>
     <form method="POST" action="/add_event" enctype="multipart/form-data">
-      <input type="text" id="title" name="title" placeholder="Title" maxlength ="19"required><br>
+      <input type="text" id="title" name="title" placeholder="Title" required>
 
-      <input type="number" id="year" name="year" placeholder="Year" required class="inline-input"><br>
+      <input type="number" id="year" name="year" placeholder="Year" required class="inline-input">
 
-      <textarea id="description" name="description" placeholder="Description" required></textarea><br>
-      <input type="text" id="video-url" name="video-url" placeholder="Wanna add Video URL?"><br>
-
-      <button type="button" id="set-coordinates-btn" class="btn btn-info">Set Coordinates</button><br>
-      <input type="hidden" id="coordinates" name="coordinates" required><br>
+      <textarea id="description" name="description" placeholder="Description" ></textarea>
+<!--      <input type="text" id="video-url" name="video-url" placeholder="Wanna add Video URL?"><br>-->
 
       <div class="form-check">
-        <label class="form-check-label">Category:</label><br>
+        <label class="form-check-label">Category:</label>
         <div class="form-check form-check-inline">
           <input class="form-check-input" type="radio" name="category" id="Biographies" value="Biographies" required>
-          <label class="form-check-label" for="Biographies">Personal</label>
+          <label class="form-check-label" for="Biographies">Biographies</label>
         </div>
         <div class="form-check form-check-inline">
           <input class="form-check-input" type="radio" name="category" id="History" value="History">
@@ -41,9 +38,25 @@
           <input class="form-check-input" type="radio" name="category" id="Places-to-Visit" value="Places-to-Visit">
           <label class="form-check-label" for="Places-to-Visit">Places to Visit</label>
         </div>
-      </div><br>
+      </div>
 
-      <input type="file" class="form-control-file" id="event-image-btn" name="image" required><br>
+            <button type="button" id="set-coordinates-btn" class="btn btn-info">Set Coordinates</button>
+      <input type="hidden" id="coordinates" name="coordinates" required>
+
+      <input type="file" class="form-control-file" id="event-image-btn" name="image">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <div class="container mt-3">
+            {% for category, message in messages %}
+              <div class="alert alert-primary" role="alert">
+
+                {{ message }}
+
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
       <button type="submit" class="btn btn-info">Add Event</button><br>
     </form>
   </div>

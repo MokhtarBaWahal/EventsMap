@@ -11,6 +11,13 @@ likes = db.Table('likes',
                  db.Column('timestamp', db.DateTime, default=datetime.utcnow)  # Optional
                  )
 
+# Association table for seen pins
+seen_pins = db.Table('seen_pins',
+                     db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
+                     db.Column('pin_id', db.Integer, db.ForeignKey('pin.id'), primary_key=True),
+                     db.Column('timestamp', db.DateTime, default=datetime.utcnow)
+                     )
+
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
@@ -27,6 +34,13 @@ class User(db.Model, UserMixin):
         'Pin',
         secondary=likes,
         backref=db.backref('liked_by', lazy='dynamic'),
+        lazy='dynamic'
+    )
+
+    seen_pins = db.relationship(
+        'Pin',
+        secondary=seen_pins,
+        backref=db.backref('seen_by', lazy='dynamic'),
         lazy='dynamic'
     )
 
